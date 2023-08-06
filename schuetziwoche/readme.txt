@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: -
+Contributors: ninoflorj
 Donate link: http://www.holderegger.org
 Tags: schuetziwoche
 Requires at least: 3.6
