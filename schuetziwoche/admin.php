@@ -24,14 +24,17 @@ function schuetziwoche_admin_options_page(){
         <form method="post" action="options.php">';
             echo settings_fields(SCHUETZIWOCHE_OPTIONS_GROUP);
             echo '<table class="form-table">
-                <tr valign="top"><th scope="row">Erster Tag der Schütziwoche:</th>
-                    <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[start_date]" value="'. $options['start_date'] .'" /> (Unix Timestamp) Aktuelle Einstellung: '.date('m.d.Y H:i', $options['start_date']).'</td>
+                <tr valign="top"><th scope="row">Erster Tag der Schütziwoche (Timestamp in GMT!):</th>
+                    <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[start_date]" value="'. $options['start_date'] .'" /> (Unix Timestamp) Aktuelle Einstellung: '.date('d.m.Y', $options['start_date']).'</td>
                 </tr>
                 <tr valign="top"><th scope="row">Limit f&uuml;r Essensanmeldung:</th>
                     <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[limit_eat]" value="'. $options['limit_eat'] .'" /> Uhr (Uhrzeit in Stunden)</td>
                 </tr>
                 <tr valign="top"><th scope="row">Limit f&uuml;r Schlafensanmeldung:</th>
                     <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[limit_sleep]" value="'. $options['limit_sleep'] .'" /> Uhr (Uhrzeit in Stunden)</td>
+                </tr>
+                <tr valign="top"><th scope="row">Auswahlmöglichkeiten der Abteilungen <br>(durch Semikolon und <b>ohne</b> Abstand abtrennen)</br>:</th>
+                    <td><input style="width: 100%;" type="textarea" name="'. SCHUETZIWOCHE_OPTIONS.'[abteilungen]" value="'. $options['abteilungen'] .'" /></td>
                 </tr>
                 <tr valign="top"><th scope="row">E-Mail Absender:</th>
                     <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[email_sender_address]" value="'. $options['email_sender_address'] .'" /></td>

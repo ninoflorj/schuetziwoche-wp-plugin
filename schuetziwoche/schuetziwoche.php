@@ -4,7 +4,7 @@ Plugin Name: Schuetziwoche
 Plugin URI: http://www.holderegger.org
 Description: Schuetziwoche Anmeldungs Plugin
 Version: 1.2
-Author: Demian Holderegger
+Author: Demian Holderegger / Nino Florjancic
 Author URI: http://www.holderegger.org
 */
 
@@ -12,6 +12,8 @@ Author URI: http://www.holderegger.org
 Schuetziwoche (Wordpress Plugin)
 Copyright (C) 2013 Demian Holderegger
 Contact me at http://www.holderegger.org
+
+The Plugin was Modified and Optimized in 2023 by Nino Florjancic v/o Sueno
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -176,11 +178,21 @@ function schuetziwoche_update() {
 	return $out;
 }
 
+function get_abteilungen_dropdown() {
+	$config = schuetziwoche_get_config();
+	$output = "";
+	$abteilungen = explode(";", $config["abteilungen"]);
+	foreach ($abteilungen as $abteilung) {
+		$output .= '<option value="' . $abteilung . '">' . $abteilung . '</option>';
+	}
+	return $output;
+}
+
 function schuetziwoche_anmeldung() {
 	$config = schuetziwoche_get_config();
 
-	return '<h2>Ich komme auch!</h2>
-		Falls du Znacht essen willst, solltest du dich sp&auml;testens <b>um '.floor($config['limit_eat']/(60*60)).' Uhr am selben Tag</b><br>angemeldet haben, <u>sonst bezahlst du 3.- mehr!</u><br>
+	return '<h2>Anmeldung</h2>
+		Falls du Znacht essen willst, solltest du dich sp&auml;testens <b>um '.floor($config['limit_eat']/(60*60)).' Uhr am selben Tag</b><br>angemeldet haben, <b>sonst bezahlst du 3.- mehr!</b><br>
 		<br>
 		<form action="'.add_query_arg('swpage','save').'" method="post">
 		<div class="fluid_form">
@@ -194,7 +206,11 @@ function schuetziwoche_anmeldung() {
 			</div>
 			<div class="row">
 				<div class="label">Abteilung: </div>
-				<div class="value"><input name="abteilung" type="text" size="30" maxlength="100"></div>
+				<div class="value">
+					<select name="abteilung">'
+						. get_abteilungen_dropdown()
+					. '</select>
+				</div>
 			</div>
 			<div class="row">
 				<div class="label">Vegi: </div>
@@ -403,7 +419,8 @@ function schuetziwoche_install() {
 		'email_notification_address' => 'info@example.com',
 		'color_bg' => '#EEE',
 		'color_border' => '#AAA',
-		'color_text' => '#333'
+		'color_text' => '#333',
+		'abteilungen' => 'Schütziwoche-OK;PRW;Andelfingen;Avalon;Bubenberg;Diviko;Dunant;Elgg;Eschenberg;Gallispitz;Hartmannen;Heidegg;NE/WA;Orion;PTA Atlantis;Seuzi;Waldmann;Wart;Andere',
 	));
 
 }

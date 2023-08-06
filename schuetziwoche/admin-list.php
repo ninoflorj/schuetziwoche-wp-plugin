@@ -61,7 +61,9 @@ class TT_Example_List_Table extends WP_List_Table {
             case 'isvegi':
                 return $item[$column_name];
             case 'date':
-                return date('d.m.Y H:i',$item['date']);
+                $date = new DateTime('@' . $item['date']);
+                $date->setTimezone(new DateTimeZone('Europe/Zurich'));
+                return $date->format('d.m.Y H:i');
             case 'anmeldung':
                 return $this->getAnmeldungDisplay($item);
             default:
@@ -166,7 +168,7 @@ class TT_Example_List_Table extends WP_List_Table {
             'name'      => 'Name',
             'abteilung' => 'Abteilung',
             'email'     => 'E-Mail',
-            'date'      => 'Datum',
+            'date'      => 'Datum (Europe/Zurich)',
             'isvegi'    => 'Vegi',
             'anmeldung' => 'Anmeldung'
         );
