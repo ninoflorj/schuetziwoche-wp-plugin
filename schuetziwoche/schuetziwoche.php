@@ -284,7 +284,8 @@ function schuetziwoche_save() {
 		$out .= 'Danke f&uuml;r deine Anmeldung '.$_POST['pfadiname'].', man sieht sich bald an der Sch&uuml;tziwoche!<br><br>';
 		$out .= '<a href="'.add_query_arg('swpage','liste').'">Wer hat sich sonst noch angemeldet?</a><br><br>';
 		$out .= 'Ich will meine Anmeldung nochmals <a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">&auml;ndern</a><br>';
-		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit diesem Link.';
+		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit diesem Link. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
+		$out .= '<b>Bitte ändere deine Anmeldung über den Link in der Bestätigungsmail, falls du deine Anmeldung ändern möchtest!</b>'
 
 		$nachricht = 'Hallo '.$_POST['pfadiname'].',' . "\r\n" .
 			'Du hast dich fuer die Schuetziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
