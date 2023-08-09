@@ -29,6 +29,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
 	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
@@ -53,6 +56,8 @@ function schuetziwoche_handler() {
 }
 
 function schuetziwoche_function() {
+	global $wpdb;
+	$config = schuetziwoche_get_config();
 
 	if ($_REQUEST['swpage']=='bearbeiten' && $_REQUEST['sw_s']){
 		$output = schuetziwoche_bearbeiten();
@@ -63,7 +68,17 @@ function schuetziwoche_function() {
 	}elseif ($_REQUEST['swpage']=='save'){
 		$output = schuetziwoche_save();
 	}else{
-		$output = schuetziwoche_liste();
+		if (isset($_COOKIE['schuetziwoche_user'])){
+			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_COOKIE['schuetziwoche_user']));
+			if ($row->name){
+				$output = schuetziwoche_bearbeiten();
+			}
+			else{
+				$output = schuetziwoche_liste();
+			}
+		}else{
+			$output = schuetziwoche_liste();
+		}
 	}
 
 	return '<div id="schuetziwoche">'.$output.'<div>';
@@ -111,11 +126,18 @@ function schuetziwoche_bearbeiten() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_REQUEST['sw_s']));
+	if (isset($_REQUEST['sw_s'])){
+		$hash = $_REQUEST['sw_s'];
+	}
+	else{
+		$hash = $_COOKIE['schuetziwoche_user'];
+	}
+
+	$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $hash));
 
 	if ($row->name){
 		$out  = '<h2>Anmeldung von '.$row->name.' bearbeiten</h2>';
-		$out .= '<form action="'.add_query_arg(array('swpage' => 'update', 'sw_s' => $_REQUEST['sw_s'])).'" method="post">';
+		$out .= '<form action="'.add_query_arg(array('swpage' => 'update', 'sw_s' => $hash)).'" method="post">';
 		$out .= '<table class="anmeldung_tagwahl" cellspacing="1">
 			<tr>
 				<th>Vegi</th>
@@ -286,6 +308,13 @@ function schuetziwoche_save() {
 		$out .= 'Ich will meine Anmeldung nochmals <a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">&auml;ndern</a><br>';
 		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit diesem Link. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
 		$out .= '<b>Bitte ändere deine Anmeldung über den Link in der Bestätigungsmail, falls du deine Anmeldung ändern möchtest!</b>';
+		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
+		$out .= '<script>
+		const d = new Date();
+		d.setTime(d.getTime() + (3*30*24*60*60*1000));
+		let expires = "expires="+ d.toUTCString();
+		document.cookie = "schuetziwoche_user='.$hash.';" + expires;
+		</script>';
 
 		$nachricht = 'Hallo '.$_POST['pfadiname'].',' . "\r\n" .
 			'Du hast dich fuer die Schuetziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
