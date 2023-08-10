@@ -59,14 +59,16 @@ function schuetziwoche_function() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	if ($_REQUEST['swpage']=='bearbeiten' && $_REQUEST['sw_s']){
+	if (($_REQUEST['swpage']=='bearbeiten' && $_REQUEST['sw_s']) || ($_REQUEST['swpage']=='anmeldung' && isset($_COOKIE['schuetziwoche_user']))){
 		$output = schuetziwoche_bearbeiten();
 	}elseif ($_REQUEST['swpage']=='update'){
 		$output = schuetziwoche_update();
-	}elseif ($_REQUEST['swpage']=='anmeldung'){
+	}elseif ($_REQUEST['swpage']=='force_anmeldung' || $_REQUEST['swpage']=='anmeldung'){
 		$output = schuetziwoche_anmeldung();
 	}elseif ($_REQUEST['swpage']=='save'){
 		$output = schuetziwoche_save();
+	}elseif ($_REQUEST['swpage']=='liste'){
+		$output = schuetziwoche_liste();
 	}else{
 		if (isset($_COOKIE['schuetziwoche_user'])){
 			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_COOKIE['schuetziwoche_user']));
@@ -137,6 +139,7 @@ function schuetziwoche_bearbeiten() {
 
 	if ($row->name){
 		$out  = '<h2>Anmeldung von '.$row->name.' bearbeiten</h2>';
+		$out .= 'Falls du jemand <b>anderen</b> anmelden willst, kannst du dies <a href="'.add_query_arg('swpage','force_anmeldung').'">hier</a> tun.<br><br>';
 		$out .= '<form action="'.add_query_arg(array('swpage' => 'update', 'sw_s' => $hash)).'" method="post">';
 		$out .= '<table class="anmeldung_tagwahl" cellspacing="1">
 			<tr>
@@ -163,6 +166,15 @@ function schuetziwoche_bearbeiten() {
 			</table>';
 		$out .= '<input type="submit" name="submit" value="Speichern">';
 		$out .= '</form>';
+		$out .= '<a href="'.add_query_arg(array('swpage' => 'liste', 'sw_s' => false)).'">Zur&uuml;ck zur &Uuml;bersicht</a>';
+		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
+		$out .= '<script>
+		const d = new Date();
+		d.setTime(d.getTime() + (3*30*24*60*60*1000));
+		let expires = "expires="+ d.toUTCString();
+		// Yes, the next line is dynamically generated on the server. I know its shit.
+		document.cookie = "schuetziwoche_user='.$hash.';" + expires;
+		</script>';
 
 	}else{
 		$out = 'Anmeldung nicht gefunden. Hast du den richtigen Link genommen?';
@@ -269,7 +281,9 @@ function schuetziwoche_anmeldung() {
 
 		<input type="submit" name="submit" value="Anmelden">
 
-		</form>';
+		</form>
+		<br>
+		<a href="?swpage=liste">Zur&uuml;ck zur &Uuml;bersicht</a>';
 
 }
 
@@ -313,6 +327,7 @@ function schuetziwoche_save() {
 		const d = new Date();
 		d.setTime(d.getTime() + (3*30*24*60*60*1000));
 		let expires = "expires="+ d.toUTCString();
+		// Yes, the next line is dynamically generated on the server. I know its shit.
 		document.cookie = "schuetziwoche_user='.$hash.';" + expires;
 		</script>';
 
