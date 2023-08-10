@@ -321,7 +321,7 @@ function schuetziwoche_save() {
 		$out .= '<a href="'.add_query_arg('swpage','liste').'">Wer hat sich sonst noch angemeldet?</a><br><br>';
 		$out .= 'Ich will meine Anmeldung nochmals <a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">&auml;ndern</a><br>';
 		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit diesem Link. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
-		$out .= '<b>Bitte ändere deine Anmeldung über den Link in der Bestätigungsmail, falls du deine Anmeldung ändern möchtest!</b>';
+		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link in der Bestätigungsmail, falls du deine Anmeldung ändern möchtest!</b>';
 		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
 		$out .= '<script>
 		const d = new Date();
