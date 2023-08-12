@@ -145,8 +145,8 @@ function schuetziwoche_bearbeiten() {
 	if ($row->name){
 		$hash = $row->hash;
 		$out  = '<h2>Anmeldung von '.$row->name.' bearbeiten</h2>';
-		$out .= 'Falls du jemand <b>anderen neu anmelden</b> willst, <a href="'.add_query_arg('swpage','force_anmeldung').'">kannst du dies hier tun.</a><br>';
-		$out .= 'Falls du die Anmeldung von <b>jemand anderem bearbeiten</b> willst, <a href="'.add_query_arg('swpage','force_bearbeiten_email').'">kannst du dies hier tun.</a><br><br>';
+		$out .= '<a href="'.add_query_arg('swpage','force_anmeldung').'"><b>Neue Person anmelden &raquo;</b></a><br>';
+		$out .= '<a href="'.add_query_arg('swpage','force_bearbeiten_email').'"><b>Bestehende Anmeldung bearbeiten &raquo;</b></a><br><br>';
 		$out .= '<form action="'.add_query_arg(array('swpage' => 'update', 'sw_s' => $hash)).'" method="post">';
 		$out .= '<table class="anmeldung_tagwahl" cellspacing="1">
 			<tr>
@@ -185,8 +185,8 @@ function schuetziwoche_bearbeiten() {
 
 	}else{
 		$out  = 'Anmeldung nicht gefunden. Hast du die richtige Email eingegeben oder den richtigen Link genommen?<br><br>';
-		$out .= '<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Nochmals probieren</a></b><br><br>';
-		$out .= '<a href="?swpage=liste">Zur&uuml;ck zur &Uuml;bersicht</a>';
+		$out .= '<b><a href="'.add_query_arg('swpage','bearbeiten_email').'"><b>Nochmals probieren &raquo;</b></a></b><br><br>';
+		$out .= '<a href="?swpage=liste"><b>Zur&uuml;ck zur &Uuml;bersicht &raquo;</b></a>';
 	}
 	return $out;
 }
@@ -236,7 +236,7 @@ function schuetziwoche_update() {
 			
 		$wpdb->query($wpdb->prepare($query, $_REQUEST['sw_s']));
 		$out  = 'Angaben ge&auml;ndert!<br><br>';
-		$out .= '<a href="'.add_query_arg(array('swpage' => 'liste', 'sw_s' => false)).'">Zur&uuml;ck zur &Uuml;bersicht</a>';
+		$out .= '<a href="'.add_query_arg(array('swpage' => 'liste', 'sw_s' => false)).'"><b>Zur&uuml;ck zur &Uuml;bersicht &raquo;</b></a>';
 	} else {
 		$out = 'Anmeldung nicht gefunden. Hast du den richtigen Link genommen?';
 	}
@@ -349,11 +349,11 @@ function schuetziwoche_save() {
 		
 		$out  = '<h2>Anmelden</h2>';
 		$out .= 'Danke f&uuml;r deine Anmeldung '.$_POST['pfadiname'].', man sieht sich bald an der Sch&uuml;tziwoche!<br><br>';
-		$out .= '<a href="'.add_query_arg('swpage','liste').'">Wer hat sich sonst noch angemeldet?</a><br>';
-		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">Ich will meine Anmeldung nochmals &auml;ndern</a><br><br>';
 		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit dem Link, um die Anmeldung zu ändern. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
 		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link im Mail oder über den "Anmeldung ändern" Link auf der Anmeldeseite, falls sich deine Pläne ändern.</b>';
-		$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.';
+		$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.<br><br>';
+		$out .= '<a href="'.add_query_arg('swpage','liste').'"><b>Wer hat sich sonst noch angemeldet? &raquo;</b></a><br><br>';
+		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'"><b>Anmeldung nochmals &auml;ndern &raquo;</b></a><br><br>';
 		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
 		$out .= '<script>
 		const d = new Date();
@@ -400,8 +400,8 @@ function schuetziwoche_liste() {
 		
 		$out = '<h2>Wer kommt?</h2>
 		Wer kommt sonst noch alles an die Sch&uuml;tziwoche? Hier kannst du es sehen!<br><br>
-		<b><a href="'.add_query_arg('swpage','anmeldung').'">Hier gehts zur Anmeldung &raquo;</a></b><br /><br />
-		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Ich will meine Anmeldung ändern &raquo;</a></b><br /><br />
+		<b><a href="'.add_query_arg('swpage','anmeldung').'">Neu Anmelden &raquo;</a></b><br /><br />
+		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Anmeldung ändern &raquo;</a></b><br /><br />
 		<table class="uebersicht_anmeldungen" cellspacing="1">
 			<tr>
 				<th colspan="2">Name / Abteilung</th>
