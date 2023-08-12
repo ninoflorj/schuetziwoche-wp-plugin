@@ -29,8 +29,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
@@ -59,7 +59,7 @@ function schuetziwoche_function() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	if (($_REQUEST['swpage']=='bearbeiten' && $_REQUEST['sw_s']) || ($_REQUEST['swpage']=='anmeldung' && isset($_COOKIE['schuetziwoche_user']))){
+	if (($_REQUEST['swpage']=='bearbeiten' && ($_REQUEST['sw_s'] || $_REQUEST['email'])) || ($_REQUEST['swpage']=='anmeldung' || $_REQUEST['swpage']=='bearbeiten_email') && isset($_COOKIE['schuetziwoche_user'])){
 		$output = schuetziwoche_bearbeiten();
 	}elseif ($_REQUEST['swpage']=='update'){
 		$output = schuetziwoche_update();
@@ -69,7 +69,10 @@ function schuetziwoche_function() {
 		$output = schuetziwoche_save();
 	}elseif ($_REQUEST['swpage']=='liste'){
 		$output = schuetziwoche_liste();
-	}else{
+	}elseif ($_REQUEST['swpage']=='bearbeiten_email' || $_REQUEST['swpage']=='force_bearbeiten_email'){
+		$output = schuetziwoche_bearbeiten_email();
+	}
+	else{
 		if (isset($_COOKIE['schuetziwoche_user'])){
 			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_COOKIE['schuetziwoche_user']));
 			if ($row->name){
@@ -128,18 +131,22 @@ function schuetziwoche_bearbeiten() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	if (isset($_REQUEST['sw_s'])){
-		$hash = $_REQUEST['sw_s'];
+	if (isset($_REQUEST['email'])) {
+		$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE email = %s LIMIT 1", $_REQUEST['email']));
+	}
+	else if (isset($_REQUEST['sw_s'])) {
+		$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_REQUEST['sw_s']));
 	}
 	else{
 		$hash = $_COOKIE['schuetziwoche_user'];
+		$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $_COOKIE['schuetziwoche_user']));
 	}
 
-	$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$config['table']." WHERE hash = %s LIMIT 1", $hash));
-
 	if ($row->name){
+		$hash = $row->hash;
 		$out  = '<h2>Anmeldung von '.$row->name.' bearbeiten</h2>';
-		$out .= 'Falls du jemand <b>anderen</b> anmelden willst, kannst du dies <a href="'.add_query_arg('swpage','force_anmeldung').'">hier</a> tun.<br><br>';
+		$out .= 'Falls du jemand <b>anderen neu anmelden</b> willst, <a href="'.add_query_arg('swpage','force_anmeldung').'">kannst du dies hier tun.</a><br>';
+		$out .= 'Falls du die Anmeldung von <b>jemand anderem bearbeiten</b> willst, <a href="'.add_query_arg('swpage','force_bearbeiten_email').'">kannst du dies hier tun.</a><br><br>';
 		$out .= '<form action="'.add_query_arg(array('swpage' => 'update', 'sw_s' => $hash)).'" method="post">';
 		$out .= '<table class="anmeldung_tagwahl" cellspacing="1">
 			<tr>
@@ -177,10 +184,34 @@ function schuetziwoche_bearbeiten() {
 		</script>';
 
 	}else{
-		$out = 'Anmeldung nicht gefunden. Hast du den richtigen Link genommen?';
+		$out  = 'Anmeldung nicht gefunden. Hast du die richtige Email eingegeben oder den richtigen Link genommen?<br><br>';
+		$out .= '<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Nochmals probieren</a></b><br><br>';
+		$out .= '<a href="?swpage=liste">Zur&uuml;ck zur &Uuml;bersicht</a>';
 	}
-
 	return $out;
+}
+
+function schuetziwoche_bearbeiten_email() {
+	$config = schuetziwoche_get_config();
+
+	return '<h2>Anmeldung bearbeiten</h2>
+		Bitte benutze <b>die selbe Email wie du zur ursprünglichen Anmeldung genutzt hast</b>, sonst wird wird deine Anmeldung nicht gefunden!<br>
+		<br>
+		<form action="'.add_query_arg('swpage','bearbeiten').'" method="post">
+		<div class="fluid_form">
+			<div class="row">
+				<div class="label">Emailadresse: </div>
+				<div class="value"><input name="email" type="text" size="30" maxlength="100"></div>
+			</div>
+		</div>
+		<br>
+		<br>
+
+		<input type="submit" name="submit" value="Anmeldung bearbeiten">
+
+		</form>
+		<br>
+		<a href="?swpage=liste">Zur&uuml;ck zur &Uuml;bersicht</a>';
 }
 
 function schuetziwoche_update() {
@@ -318,10 +349,11 @@ function schuetziwoche_save() {
 		
 		$out  = '<h2>Anmelden</h2>';
 		$out .= 'Danke f&uuml;r deine Anmeldung '.$_POST['pfadiname'].', man sieht sich bald an der Sch&uuml;tziwoche!<br><br>';
-		$out .= '<a href="'.add_query_arg('swpage','liste').'">Wer hat sich sonst noch angemeldet?</a><br><br>';
-		$out .= 'Ich will meine Anmeldung nochmals <a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">&auml;ndern</a><br>';
-		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit diesem Link. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
-		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link in der Bestätigungsmail, falls du deine Anmeldung ändern möchtest!</b>';
+		$out .= '<a href="'.add_query_arg('swpage','liste').'">Wer hat sich sonst noch angemeldet?</a><br>';
+		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'">Ich will meine Anmeldung nochmals &auml;ndern</a><br><br>';
+		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit dem Link, um die Anmeldung zu ändern. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
+		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link im Mail oder über den "Anmeldung ändern" Link auf der Anmeldeseite, falls sich deine Pläne ändern.</b>';
+		$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.';
 		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
 		$out .= '<script>
 		const d = new Date();
@@ -365,6 +397,7 @@ function schuetziwoche_liste() {
 		$out = '<h2>Wer kommt?</h2>
 		Wer kommt sonst noch alles an die Sch&uuml;tziwoche? Hier kannst du es sehen!<br><br>
 		<b><a href="'.add_query_arg('swpage','anmeldung').'">Hier gehts zur Anmeldung &raquo;</a></b><br /><br />
+		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Ich will meine Anmeldung ändern &raquo;</a></b><br /><br />
 		<table class="uebersicht_anmeldungen" cellspacing="1">
 			<tr>
 				<th colspan="2">Name / Abteilung</th>
