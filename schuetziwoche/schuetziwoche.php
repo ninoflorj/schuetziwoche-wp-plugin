@@ -367,10 +367,14 @@ function schuetziwoche_save() {
 			'Du hast dich fuer die Schuetziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
 			'Falls du deine Anmeldung aendern moechtest kannst du dies mit folgendem link tun:' . "\r\n" .
 			get_option('home') . add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)) . "\r\n" .
+			'Wir bitten dich auch, dies wirklich zu tun, falls sich deine Plaene aendern!' . "\r\n" . "\r\n" .
+			'Ausserdem sollte sich das Geraet auf welchem du dich angemeldet hast an dich erinnern, wenn du die Seite erneut aufrufst. Der Link sollte dann gar nicht noetig sein.' . "\r\n" .
+			'Du kannst ausserdem auch auf einem anderen Geraet deine Anmeldung bearbeiten ohne dass du den Link benoetigst. Alles was du machen musst, ist deine E-Mail einzugeben auf der Webseite.'. "\r\n" . "\r\n" .
+			'Pfadigruesse,'. "\r\n" .
 			'Dein Schuetziwoche Team';
 		$header = 'From: '.$config['email_sender_address'];
 		
-		mail($_POST['email'], utf8_encode('Anmeldung Schuetziwoche'), utf8_encode($nachricht), $header);
+		mail($_POST['email'], mb_convert_encoding('Anmeldung Schuetziwoche', 'UTF-8'), mb_convert_encoding($nachricht, 'UTF-8'), $header);
 		
 		mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')));
 		
