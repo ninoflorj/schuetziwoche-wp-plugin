@@ -365,19 +365,24 @@ function schuetziwoche_save() {
 		</script>';
 
 		$nachricht = 'Hallo '.$_POST['pfadiname'].',' . "\r\n" .
-			'Du hast dich fuer die Schuetziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
-			'Falls du deine Anmeldung aendern moechtest kannst du dies mit folgendem link tun:' . "\r\n" .
+			'Du hast dich für die Schütziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
+			'Falls du deine Anmeldung ändern mächtest kannst du dies mit folgendem Link tun:' . "\r\n" .
 			get_option('home') . add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)) . "\r\n" .
-			'Wir bitten dich auch, dies wirklich zu tun, falls sich deine Plaene aendern!' . "\r\n" . "\r\n" .
-			'Ausserdem sollte sich das Geraet auf welchem du dich angemeldet hast an dich erinnern, wenn du die Seite erneut aufrufst. Der Link sollte dann gar nicht noetig sein.' . "\r\n" .
-			'Du kannst ausserdem auch auf einem anderen Geraet deine Anmeldung bearbeiten ohne dass du den Link benoetigst. Alles was du machen musst, ist deine E-Mail einzugeben auf der Webseite.'. "\r\n" . "\r\n" .
-			'Pfadigruesse,'. "\r\n" .
-			'Dein Schuetziwoche Team';
-		$header = 'From: '.$config['email_sender_address'];
+			'Wir bitten dich, dies auch wirklich zu tun, falls sich deine Pläne ändern!' . "\r\n" . "\r\n" .
+			'Ausserdem sollte sich das Gerät auf welchem du dich angemeldet hast an dich erinnern, wenn du die Seite erneut aufrufst. Der Link sollte dann also gar nicht nötig sein.' . "\r\n" .
+			'Du kannst ausserdem auch auf einem anderen Gerät deine Anmeldung bearbeiten ohne dass du den Link benötigst. Alles was du machen musst, ist deine E-Mail einzugeben auf der Webseite.'. "\r\n" . "\r\n" .
+			'Pfadigrüsse,'. "\r\n" .
+			'Dein Schütziwoche Team';
+		$subject = '=?UTF-8?B?' . base64_encode('Anmeldung Schütziwoche') . '?=';
+		$header = 'From: ' . $config['email_sender_address'] . "\r\n" .
+          'Reply-To: ' . $config['email_sender_address'] . "\r\n" .
+          'MIME-Version: 1.0' . "\r\n" .
+          'Content-Type: text/plain; charset=UTF-8' . "\r\n" .
+          'Content-Transfer-Encoding: 8bit' . "\r\n" .
+          'X-Mailer: PHP/' . phpversion();
 		
-		mail($_POST['email'], mb_convert_encoding('Anmeldung Schuetziwoche', 'UTF-8'), mb_convert_encoding($nachricht, 'UTF-8'), $header);
-		
-		mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')));
+		mail($_POST['email'], $subject, $nachricht, $header);
+		mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')), $header);
 		
 		return $out;			
 	}
