@@ -246,6 +246,7 @@ function schuetziwoche_update() {
 function get_abteilungen_dropdown() {
 	$config = schuetziwoche_get_config();
 	$output = "";
+	$output = '<option value="">Bitte wähle eine Abteilung</option>';
 	$abteilungen = explode(";", $config["abteilungen"]);
 	foreach ($abteilungen as $abteilung) {
 		$output .= '<option value="' . $abteilung . '">' . $abteilung . '</option>';
@@ -263,16 +264,16 @@ function schuetziwoche_anmeldung() {
 		<div class="fluid_form">
 			<div class="row">
 				<div class="label">Pfadiname: </div>
-				<div class="value"><input name="pfadiname" type="text" size="30" maxlength="100"></div>
+				<div class="value"><input name="pfadiname" type="text" size="30" maxlength="100" required></div>
 			</div>
 			<div class="row">
 				<div class="label">Emailadresse: </div>
-				<div class="value"><input name="email" type="text" size="30" maxlength="100"></div>
+				<div class="value"><input name="email" type="email" size="30" maxlength="100" required></div>
 			</div>
 			<div class="row">
 				<div class="label">Abteilung: </div>
 				<div class="value">
-					<select name="abteilung">'
+					<select name="abteilung" required>'
 						. get_abteilungen_dropdown()
 					. '</select>
 				</div>
@@ -400,8 +401,8 @@ function schuetziwoche_liste() {
 		
 		$out = '<h2>Wer kommt?</h2>
 		Wer kommt sonst noch alles an die Sch&uuml;tziwoche? Hier kannst du es sehen!<br><br>
-		<b><a href="'.add_query_arg('swpage','anmeldung').'">Neu Anmelden &raquo;</a></b><br /><br />
-		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Anmeldung ändern &raquo;</a></b><br /><br />
+		<b><a href="'.add_query_arg('swpage','anmeldung').'">Ich will mich Anmelden &raquo;</a></b><br />
+		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Ich will meine Anmeldung ändern &raquo;</a></b><br /><br />
 		<table class="uebersicht_anmeldungen" cellspacing="1">
 			<tr>
 				<th colspan="2">Name / Abteilung</th>
