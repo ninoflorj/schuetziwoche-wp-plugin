@@ -411,7 +411,6 @@ function schuetziwoche_liste() {
 		<table class="uebersicht_anmeldungen" cellspacing="1">
 			<tr>
 				<th colspan="2">Name / Abteilung</th>
-				<th>Vegi</th>
 				<th colspan="2">Mo '. date('d.n',$config['date'][1]) .'</th>
 				<th colspan="2">Di '. date('d.n',$config['date'][2]) .'</th>
 				<th colspan="2">Mi '. date('d.n',$config['date'][3]) .'</th>
@@ -424,7 +423,6 @@ function schuetziwoche_liste() {
 			$out .= '<tr>';
 			$out .= '<td title="'.$row->name.'">'.schuetziwoche_kuerzen($row->name,11).'</td>';
 			$out .= '<td title="'.$row->abteilung.'">'.($row->abteilung?schuetziwoche_kuerzen($row->abteilung,18):'&nbsp;').'</td>';
-			$out .= ($row->isvegi?'<td><img src="'.$config['imgurl'].'vegi.png"></td>':'<td>&nbsp;</td>');
 			$out .= ($row->mo_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
 			$out .= ($row->mo_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
 			$out .= ($row->di_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
@@ -444,7 +442,6 @@ function schuetziwoche_liste() {
 
 		$out .= '<tr>';
 		$out .= '<td>'.$total.'</td><td>&nbsp;</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->isvegi.'</td>';
 		$out .= '<td class="uebersicht_tot">'.$row->mo_eat.'</td>';
 		$out .= '<td class="uebersicht_tot">'.$row->mo_sleep.'</td>';
 		$out .= '<td class="uebersicht_tot">'.$row->di_eat.'</td>';
