@@ -24,8 +24,9 @@ function schuetziwoche_admin_options_page(){
         <form method="post" action="options.php">';
             echo settings_fields(SCHUETZIWOCHE_OPTIONS_GROUP);
             echo '<table class="form-table">
-                <tr valign="top"><th scope="row">Erster Tag der Schütziwoche (Timestamp in GMT!):</th>
-                    <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[start_date]" value="'. $options['start_date'] .'" /> (Unix Timestamp) Aktuelle Einstellung: '.date('d.m.Y', $options['start_date']).'</td>
+                <tr valign="top"><th scope="row">Erster Tag der Schütziwoche (Unix-Timestamp in GMT!):</th>
+                    <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[start_date]" value="'. $options['start_date'] .'" /> Aktuelle Einstellung: '.date('d.m.Y H:i', $options['start_date']).' (Lokalzeit)</td>
+                    <td><b>Achtung: Es MUSS die Uhrzeit 00:00 (Lokalzeit) gewählt werden im Timestamp!</b> (Ansonsten sind die Anmeldelimiten verschoben)</td>
                 </tr>
                 <tr valign="top"><th scope="row">Limit f&uuml;r Essensanmeldung:</th>
                     <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[limit_eat]" value="'. $options['limit_eat'] .'" /> Uhr (Uhrzeit in Stunden)</td>

@@ -51,6 +51,9 @@ if ( is_admin() )
 add_shortcode("schuetziwoche", "schuetziwoche_handler");
 add_action('wp_head', 'schuetziwoche_css');
 
+// Set the Timezone to Display when date() is called
+date_default_timezone_set('Europe/Zurich');
+
 function schuetziwoche_handler() {
 	$output = schuetziwoche_function();
 	return $output;
