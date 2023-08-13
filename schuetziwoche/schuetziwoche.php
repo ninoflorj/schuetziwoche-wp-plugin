@@ -60,7 +60,10 @@ function schuetziwoche_function() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	if (($_REQUEST['swpage']=='bearbeiten' && ($_REQUEST['sw_s'] || $_REQUEST['email'])) || ($_REQUEST['swpage']=='anmeldung' || $_REQUEST['swpage']=='bearbeiten_email') && isset($_COOKIE['schuetziwoche_user'])){
+	if ($config['start_date'] + 60*60*24*6 < time()) {
+		return '<h2>Anmeldung geschlossen</h2><h4>Die Anmeldung wird spätestens zwei Wochen vor der Schütziwoche geöffnet</h4>';
+	}
+	elseif (($_REQUEST['swpage']=='bearbeiten' && ($_REQUEST['sw_s'] || $_REQUEST['email'])) || ($_REQUEST['swpage']=='anmeldung' || $_REQUEST['swpage']=='bearbeiten_email') && isset($_COOKIE['schuetziwoche_user'])){
 		$output = schuetziwoche_bearbeiten();
 	}elseif ($_REQUEST['swpage']=='update'){
 		$output = schuetziwoche_update();
@@ -395,68 +398,63 @@ function schuetziwoche_liste() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	if ($config['start_date'] + 60*60*24*6 < time()) {
-		return '<h2>Anmeldung geschlossen</h2><h4>Die Anmeldung wird spätestens zwei Wochen vor der Schütziwoche geöffnet</h4>';
-	}
-	else {
-		$orderby = 'name';
-		if ($_GET['orderby']=='date') $orderby = 'date';
-		if ($_GET['orderby']=='abteilung') $orderby = 'abteilung';
+	$orderby = 'name';
+	if ($_GET['orderby']=='date') $orderby = 'date';
+	if ($_GET['orderby']=='abteilung') $orderby = 'abteilung';
 
-		$result = $wpdb->get_results("SELECT * FROM ".$config['table']." ORDER BY ".$orderby." ASC");
-		
-		$out = '<h2>Wer kommt?</h2>
-		Wer kommt sonst noch alles an die Sch&uuml;tziwoche? Hier kannst du es sehen!<br><br>
-		<b><a href="'.add_query_arg('swpage','anmeldung').'">Ich will mich Anmelden &raquo;</a></b><br />
-		<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Ich will meine Anmeldung ändern &raquo;</a></b><br /><br />
-		<table class="uebersicht_anmeldungen" cellspacing="1">
-			<tr>
-				<th colspan="2">Name / Abteilung</th>
-				<th colspan="2">Mo '. date('d.n',$config['date'][1]) .'</th>
-				<th colspan="2">Di '. date('d.n',$config['date'][2]) .'</th>
-				<th colspan="2">Mi '. date('d.n',$config['date'][3]) .'</th>
-				<th colspan="2">Do '. date('d.n',$config['date'][4]) .'</th>
-				<th colspan="2">Fr '. date('d.n',$config['date'][5]) .'</th>
-			</tr>';
-		
-		$total = 0;	
-		foreach ($result as $row) {
-			$out .= '<tr>';
-			$out .= '<td title="'.$row->name.'">'.schuetziwoche_kuerzen($row->name,11).'</td>';
-			$out .= '<td title="'.$row->abteilung.'">'.($row->abteilung?schuetziwoche_kuerzen($row->abteilung,18):'&nbsp;').'</td>';
-			$out .= ($row->mo_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->mo_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->di_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->di_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->mi_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->mi_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->do_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->do_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->fr_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= ($row->fr_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-			$out .= '</tr>';
-
-			$total++;
-		}
-		
-		$row = $wpdb->get_row("SELECT SUM(isvegi) as isvegi, SUM(mo_eat) as mo_eat, SUM(mo_sleep) as mo_sleep ,SUM(di_eat) as di_eat, SUM(di_sleep) as di_sleep ,SUM(mi_eat) as mi_eat, SUM(mi_sleep) as mi_sleep ,SUM(do_eat) as do_eat, SUM(do_sleep) as do_sleep ,SUM(fr_eat) as fr_eat, SUM(fr_sleep) as fr_sleep  FROM ".$config['table']."");
-
+	$result = $wpdb->get_results("SELECT * FROM ".$config['table']." ORDER BY ".$orderby." ASC");
+	
+	$out = '<h2>Wer kommt?</h2>
+	Wer kommt sonst noch alles an die Sch&uuml;tziwoche? Hier kannst du es sehen!<br><br>
+	<b><a href="'.add_query_arg('swpage','anmeldung').'">Ich will mich Anmelden &raquo;</a></b><br />
+	<b><a href="'.add_query_arg('swpage','bearbeiten_email').'">Ich will meine Anmeldung ändern &raquo;</a></b><br /><br />
+	<table class="uebersicht_anmeldungen" cellspacing="1">
+		<tr>
+			<th colspan="2">Name / Abteilung</th>
+			<th colspan="2">Mo '. date('d.n',$config['date'][1]) .'</th>
+			<th colspan="2">Di '. date('d.n',$config['date'][2]) .'</th>
+			<th colspan="2">Mi '. date('d.n',$config['date'][3]) .'</th>
+			<th colspan="2">Do '. date('d.n',$config['date'][4]) .'</th>
+			<th colspan="2">Fr '. date('d.n',$config['date'][5]) .'</th>
+		</tr>';
+	
+	$total = 0;	
+	foreach ($result as $row) {
 		$out .= '<tr>';
-		$out .= '<td>'.$total.'</td><td>&nbsp;</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->mo_eat.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->mo_sleep.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->di_eat.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->di_sleep.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->mi_eat.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->mi_sleep.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->do_eat.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->do_sleep.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->fr_eat.'</td>';
-		$out .= '<td class="uebersicht_tot">'.$row->fr_sleep.'</td>';
-		$out .= '</tr></table>';
+		$out .= '<td title="'.$row->name.'">'.schuetziwoche_kuerzen($row->name,11).'</td>';
+		$out .= '<td title="'.$row->abteilung.'">'.($row->abteilung?schuetziwoche_kuerzen($row->abteilung,18):'&nbsp;').'</td>';
+		$out .= ($row->mo_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->mo_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->di_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->di_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->mi_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->mi_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->do_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->do_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->fr_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= ($row->fr_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		$out .= '</tr>';
 
-		return $out;
+		$total++;
 	}
+	
+	$row = $wpdb->get_row("SELECT SUM(isvegi) as isvegi, SUM(mo_eat) as mo_eat, SUM(mo_sleep) as mo_sleep ,SUM(di_eat) as di_eat, SUM(di_sleep) as di_sleep ,SUM(mi_eat) as mi_eat, SUM(mi_sleep) as mi_sleep ,SUM(do_eat) as do_eat, SUM(do_sleep) as do_sleep ,SUM(fr_eat) as fr_eat, SUM(fr_sleep) as fr_sleep  FROM ".$config['table']."");
+
+	$out .= '<tr>';
+	$out .= '<td>'.$total.'</td><td>&nbsp;</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->mo_eat.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->mo_sleep.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->di_eat.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->di_sleep.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->mi_eat.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->mi_sleep.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->do_eat.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->do_sleep.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->fr_eat.'</td>';
+	$out .= '<td class="uebersicht_tot">'.$row->fr_sleep.'</td>';
+	$out .= '</tr></table>';
+
+	return $out;
 }
 
 function schuetziwoche_kuerzen($str, $len){
