@@ -131,6 +131,16 @@ function schuetziwoche_admin_overview() {
                     <li>Übernachtung: <b>' .$row->fr_sleep .' Personen</b></li>
                 </ul>';
 
+        $out .= '<h3>Nach Abteilung</h3>';
+        $out .= '<i>(Wieder Abgemeldete inkludiert)</i>';
+        $abteilungen = explode(";", $config["abteilungen"]);
+        $out .= '<ul>';
+        foreach ($abteilungen as $abteilung) {
+            $count = $wpdb->get_var("SELECT COUNT(*) FROM ".$config['table']." WHERE abteilung = '" .$abteilung ."'");
+            $out .= '<li>' .$abteilung .': <b>'.$count .' Personen</b></li>';
+        }
+        $out .= '</ul>';
+
         $out .= '</div>';
         echo $out;
 }
