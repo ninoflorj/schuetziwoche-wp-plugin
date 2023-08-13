@@ -60,6 +60,82 @@ function schuetziwoche_admin_options_page(){
 }
 
 
+function schuetziwoche_admin_overview() {
+    global $wpdb;
+	$config = schuetziwoche_get_config();
+
+        $result = $wpdb->get_results("SELECT * FROM ".$config['table']." ORDER BY abteilung ASC");
+    
+        $out = '<style>
+                .sw_overview ul {
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                }
+            
+                .sw_overview li:before {
+                    content: "•";
+                    font-size: 1.5em;
+                    margin-right: 0.5em;
+                }
+            </style>';
+
+        $out .= '<h2>Übersicht</h2>';
+        $out .= '<div class="sw_overview">';
+        
+        $total = 0;
+        foreach ($result as $row) {
+            $total++;
+        }
+        
+        $row = $wpdb->get_row("SELECT SUM(isvegi) as isvegi, SUM(mo_eat) as mo_eat, SUM(mo_sleep) as mo_sleep ,SUM(di_eat) as di_eat, SUM(di_sleep) as di_sleep ,SUM(mi_eat) as mi_eat, SUM(mi_sleep) as mi_sleep ,SUM(do_eat) as do_eat, SUM(do_sleep) as do_sleep ,SUM(fr_eat) as fr_eat, SUM(fr_sleep) as fr_sleep  FROM ".$config['table']."");
+
+        $out .= '<h3>Total</h3>';
+        $out .= '<ul>
+                    <li>Angemeldete Personen: <b>' .$total .' Personen </b></li>
+                    <li>Vegis: <b>' .$row->isvegi .' Personen</b></li>
+                </ul>';
+
+        $out .= '<h3>Mo, '. date('d.n',$config['date'][1]) .'</h3>';
+        $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE mo_eat = 1");
+        $out .= '<ul>
+                    <li>Znacht: <b>' .$row->mo_eat .' Personen </b>(' .$vegi .' davon Vegi)</li>
+                    <li>Übernachtung: <b>' .$row->mo_sleep .' Personen</b></li>
+                </ul>';
+
+        $out .= '<h3>Di, '. date('d.n',$config['date'][2]) .'</h3>';
+        $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE di_eat = 1");
+        $out .= '<ul>
+                    <li>Znacht: <b>' .$row->di_eat .' Personen </b>(' .$vegi .' davon Vegi)</li>
+                    <li>Übernachtung: <b>' .$row->di_sleep .' Personen</b></li>
+                </ul>';
+
+        $out .= '<h3>Mi, '. date('d.n',$config['date'][3]) .'</h3>';
+        $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE mi_eat = 1");
+        $out .= '<ul>
+                    <li>Znacht: <b>' .$row->mi_eat .' Personen </b>(' .$vegi .' davon Vegi)</li>
+                    <li>Übernachtung: <b>' .$row->mi_sleep .' Personen</b></li>
+                </ul>';
+
+        $out .= '<h3>Do, '. date('d.n',$config['date'][4]) .'</h3>';
+        $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE do_eat = 1");
+        $out .= '<ul>
+                    <li>Znacht: <b>' .$row->do_eat .' Personen </b>(' .$vegi .' davon Vegi)</li>
+                    <li>Übernachtung: <b>' .$row->do_sleep .' Personen</b></li>
+                </ul>';
+
+        $out .= '<h3>Fr, '. date('d.n',$config['date'][5]) .'</h3>';
+        $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE fr_eat = 1");
+        $out .= '<ul>
+                    <li>Znacht: <b>' .$row->fr_eat .' Personen </b>(' .$vegi .' davon Vegi)</li>
+                    <li>Übernachtung: <b>' .$row->fr_sleep .' Personen</b></li>
+                </ul>';
+
+        $out .= '</div>';
+        echo $out;
+}
+
+
 function schuetziwoche_admin_registrations(){
 	$options = get_option(SCHUETZIWOCHE_OPTIONS);
 
@@ -68,8 +144,7 @@ function schuetziwoche_admin_registrations(){
     //Fetch, prepare, sort, and filter our data...
     $testListTable->prepare_items();
     
-    ?>
-    <div class="wrap">
+    $out = '<div class="wrap">
         
         <div id="icon-users" class="icon32"><br/></div>
         <h2>Anmeldungen</h2>
@@ -77,18 +152,19 @@ function schuetziwoche_admin_registrations(){
         <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
         <form id="movies-filter" method="get">
             <!-- For plugins, we also need to ensure that the form posts back to our current page -->
-            <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-            <!-- Now we can render the completed list table -->
-            <?php $testListTable->display() ?>
-        </form>
+            <input type="hidden" name="page" value="'.$_REQUEST['page'] .'"/>
+            <!-- Now we can render the completed list table -->'
+            .$testListTable->display()
+        .'</form>
         
-    </div>
-    <?php
+    </div>';
+
+    echo $out;
 }
 
 function schuetziwoche_admin_add_page(){
-
-    add_menu_page('Schütziwoche - Tabelle', 'Schütziwoche', 'edit_pages', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_registrations', plugins_url() . '/schuetziwoche/img/plugin-logo.png', 0 );
+    add_menu_page('Schütziwoche - Übersicht', 'Schütziwoche', 'edit_pages', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_overview', plugins_url() . '/schuetziwoche/img/plugin-logo.png', 0 );
+    add_submenu_page( SCHUETZIWOCHE_MENU_SLUG, 'Schütziwoche - Tabelle', 'Anmeldetabelle', 'manage_options', SCHUETZIWOCHE_MENU_SLUG .'-table', 'schuetziwoche_admin_registrations');
 	add_submenu_page( SCHUETZIWOCHE_MENU_SLUG, 'Schütziwoche - Optionen', 'Optionen', 'manage_options', SCHUETZIWOCHE_MENU_SLUG .'-options', 'schuetziwoche_admin_options_page');
 	//add_options_page('Sch&uuml;tziwoche', 'Sch&uuml;tziwoche', 'manage_options', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_options_page');
 }
