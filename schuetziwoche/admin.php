@@ -59,6 +59,12 @@ function schuetziwoche_admin_options_page(){
     </div>';
 }
 
+function schuetziwoche_admin_overview_page() {
+	echo '<div class="wrap">
+        <h2>Übersicht der Anmeldungen</h2>;
+    </div>';
+}
+
 function schuetziwoche_admin_registrations(){
 	$options = get_option(SCHUETZIWOCHE_OPTIONS);
 
@@ -87,8 +93,9 @@ function schuetziwoche_admin_registrations(){
 
 function schuetziwoche_admin_add_page(){
 
-	add_menu_page('Sch&uuml;tziwoche', 'Sch&uuml;tziwoche', 'edit_pages', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_registrations', plugins_url() . '/schuetziwoche/img/plugin-logo.png', 31 );
-	add_submenu_page( SCHUETZIWOCHE_MENU_SLUG, 'Optionen', 'Optionen', 'manage_options', SCHUETZIWOCHE_MENU_SLUG .'-options', 'schuetziwoche_admin_options_page');
+    add_menu_page('Schütziwoche - Anmeldungsübersicht', 'Schütziwoche', 'edit_pages', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_overview_page', plugins_url() . '/schuetziwoche/img/plugin-logo.png', 31 );
+    add_submenu_page( SCHUETZIWOCHE_MENU_SLUG, 'Schütziwoche - Tabelle', 'Anmeldungstabelle', 'manage_options', SCHUETZIWOCHE_MENU_SLUG .'-table', 'schuetziwoche_admin_registrations');
+	add_submenu_page( SCHUETZIWOCHE_MENU_SLUG, 'Schütziwoche - Optionen', 'Optionen', 'manage_options', SCHUETZIWOCHE_MENU_SLUG .'-options', 'schuetziwoche_admin_options_page');
 	//add_options_page('Sch&uuml;tziwoche', 'Sch&uuml;tziwoche', 'manage_options', SCHUETZIWOCHE_MENU_SLUG, 'schuetziwoche_admin_options_page');
 }
 
