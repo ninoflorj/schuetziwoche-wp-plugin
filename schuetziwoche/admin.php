@@ -115,10 +115,15 @@ function schuetziwoche_admin_overview() {
             $out .= '<li><a href="#' .$abteilung .'">' .$abteilung .'</a></li>';
         }
         $out .= '</ul></li>
+                <li><a href="#gesamt">Gesamtstatistik</a></li>
                 </ul>';
-        $out .= '<h2 id="wochentag">Statistik nach Wochentag</h2>';
+        $out .= '<hr><h2 id="wochentag">Statistik nach Wochentag</h2>';
         
         $total = 0;
+        $total_sleep = 0;
+        $total_eat = 0;
+        $total_sleeponly = 0;
+        $total_cost = 0;
         foreach ($result as $row) {
             $total++;
         }
@@ -126,12 +131,6 @@ function schuetziwoche_admin_overview() {
         $row = $wpdb->get_row("SELECT SUM(isvegi) as isvegi, SUM(mo_eat) as mo_eat, SUM(mo_sleep) as mo_sleep ,SUM(di_eat) as di_eat, SUM(di_sleep) as di_sleep ,SUM(mi_eat) as mi_eat, SUM(mi_sleep) as mi_sleep ,SUM(do_eat) as do_eat, SUM(do_sleep) as do_sleep ,SUM(fr_eat) as fr_eat, SUM(fr_sleep) as fr_sleep  FROM ".$config['table']."");
         $row->isvegi = $row->isvegi !== NULL ? $row->isvegi : 0;
         $total = $total !== NULL ? $total : 0;
-
-        $out .= '<h3>Total</h3>';
-        $out .= '<ul>
-                    <li>Angemeldete Personen: <b>' .$total .' Personen </b></li>
-                    <li>Vegis: <b>' .$row->isvegi .' Personen</b></li>
-                </ul>';
         
         $out .= '<h3>Mo, '. date('d.n',$config['date'][1]) .'</h3>';
         $vegi = $wpdb->get_var("SELECT SUM(isvegi) FROM ".$config['table']." WHERE mo_eat = 1");
@@ -183,14 +182,16 @@ function schuetziwoche_admin_overview() {
                     <li>Übernachtung: <b>' .$row->fr_sleep .' Personen</b></li>
                 </ul>';
 
-        $out .= '<h2 id="abteilung">Statistik und Abrechnung nach Abteilung</h2>';
+        $out .= '<hr><h2 id="abteilung">Statistik und Abrechnung nach Abteilung</h2>';
         $out .= '<i>(Wieder Abgemeldete in Anzahl inkludiert, jedoch nicht in Kosten)</i>';
         foreach ($abteilungen as $abteilung) {
             $count = $wpdb->get_var("SELECT COUNT(*) FROM ".$config['table']." WHERE abteilung = '" .$abteilung ."'");
             $count_sleep = $wpdb->get_var("SELECT SUM(mo_sleep + di_sleep + mi_sleep + do_sleep + fr_sleep) FROM ".$config['table']." WHERE abteilung = '" .$abteilung ."'");
             $count_sleep = $count_sleep !== NULL ? $count_sleep : 0;
+            $total_sleep += $count_sleep;
             $count_eat = $wpdb->get_var("SELECT SUM(mo_eat + di_eat + mi_eat + do_eat + fr_eat) FROM ".$config['table']." WHERE abteilung = '" .$abteilung ."'");
             $count_eat = $count_eat !== NULL ? $count_eat : 0;
+            $total_eat += $count_eat;
             $count_sleeponly = $wpdb->get_var("SELECT SUM(CASE WHEN mo_sleep = 1 AND mo_eat = 0 THEN 1 ELSE 0 END + 
                                                 CASE WHEN di_sleep = 1 AND di_eat = 0 THEN 1 ELSE 0 END + 
                                                 CASE WHEN mi_sleep = 1 AND mi_eat = 0 THEN 1 ELSE 0 END + 
@@ -199,7 +200,9 @@ function schuetziwoche_admin_overview() {
                                     FROM ".$config['table']." 
                                     WHERE abteilung = '".$abteilung."'");
             $count_sleeponly = $count_sleeponly !== NULL ? $count_sleeponly : 0;
+            $total_sleeponly += $count_sleeponly;
             $cost = $count_sleeponly * $config['cost_sleep'] + $count_eat * $config['cost_eat'];
+            $total_cost += $cost;
             $out .= '<ul>';
             $out .= '<li id="' .$abteilung .'" class="abteilung"><b>' .$abteilung .'</b> (' .$count .' Personen)';
             $out .= '<ul class="tab">
@@ -210,6 +213,17 @@ function schuetziwoche_admin_overview() {
                     </ul></li>';
             $out .= '</ul>';
         }
+
+        $out .= '<hr><h2 id="gesamt">Gesamtstatistik</h2>';
+        $out .= '<ul>
+                    <li>Angemeldete Personen: <b>' .$total .' Personen </b></li>
+                    <li>Vegis: <b>' .$row->isvegi .' Personen</b></li>
+                    <li>Übernachtungen: <b>' .$total_sleep .' Übernachtungen</b></li>
+                    <li>Übernachtungen ohne Znacht: <b>' .$total_sleeponly .' Übernachtungen</b></li>
+                    <li>Znacht: <b>' .$total_eat .' Znachts</b></li>
+                    <li>Einnahmen: <b>' .$total_cost .' Fr.</b></li>
+
+                </ul>';
 
         $out .= '</div>';
         echo $out;
