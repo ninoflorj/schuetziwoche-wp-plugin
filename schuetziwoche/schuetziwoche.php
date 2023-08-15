@@ -191,8 +191,10 @@ function schuetziwoche_bearbeiten() {
 		</script>';
 
 	}else{
-		$out  = 'Anmeldung nicht gefunden. Hast du die richtige Email eingegeben oder den richtigen Link genommen?<br><br>';
+		$out  =  '<script>document.cookie = "schuetziwoche_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";</script>';
+		$out .= 'Anmeldung nicht gefunden. Hast du die richtige Email eingegeben oder den richtigen Link genommen?<br><br>';
 		$out .= '<b><a href="'.add_query_arg('swpage','bearbeiten_email').'"><b>Nochmals probieren &raquo;</b></a></b><br><br>';
+		$out .= '<b><a href="'.add_query_arg('swpage','force_anmeldung').'"><b>Stattdessen als neuer Benutzer anmelden &raquo;</b></a></b><br><br>';
 		$out .= '<a href="?swpage=liste"><b>Zur&uuml;ck zur &Uuml;bersicht &raquo;</b></a>';
 	}
 	return $out;
@@ -208,7 +210,7 @@ function schuetziwoche_bearbeiten_email() {
 		<div class="fluid_form">
 			<div class="row">
 				<div class="label">Emailadresse: </div>
-				<div class="value"><input name="email" type="text" size="30" maxlength="100"></div>
+				<div class="value"><input name="email" type="email" size="30" maxlength="100"></div>
 			</div>
 		</div>
 		<br>
