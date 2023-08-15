@@ -496,7 +496,6 @@ function schuetziwoche_install() {
 		do_sleep smallint(1) default '0',
 		fr_eat smallint(1) default '0',
 		fr_sleep smallint(1) default '0',
-		hastopay tinyint(1) default '1',
 		PRIMARY KEY  (id)
 	) ENGINE=MyISAM AUTO_INCREMENT=110 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=110 ;";
 
