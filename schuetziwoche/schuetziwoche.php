@@ -265,7 +265,7 @@ function schuetziwoche_anmeldung() {
 	$config = schuetziwoche_get_config();
 
 	return '<h2>Anmeldung</h2>
-		Falls du Znacht essen willst, solltest du dich sp&auml;testens <b>um '.floor($config['limit_eat']/(60*60)).' Uhr am selben Tag</b><br>angemeldet haben, <b>sonst bezahlst du 3.- mehr!</b><br>
+		Falls du Znacht essen willst, solltest du dich sp&auml;testens <b>um '.floor($config['limit_eat']/(60*60)).' Uhr am selben Tag</b><br>angemeldet haben, <b>sonst bezahlst du 2.- mehr!</b> (Du kannst dich dann auch nicht mehr über dieses Tool anmelden. Komm dann einfach unangemeldet vorbei.)<br>
 		<br>
 		<form action="'.add_query_arg('swpage','save').'" method="post">
 		<div class="fluid_form">
@@ -513,6 +513,9 @@ function schuetziwoche_install() {
 		'color_border' => '#AAA',
 		'color_text' => '#333',
 		'abteilungen' => 'Schütziwoche-OK;PRW;Andelfingen;Avalon;Bubenberg;Diviko;Dunant;Elgg;Eschenberg;Gallispitz;Hartmannen;Heidegg;NE/WA;Orion;PTA Atlantis;Seuzi;Waldmann;Wart;Andere',
+		'abteilungen_paying' => 'Schütziwoche-OK',
+		'cost_eat' => 9,
+		'cost_sleep' => 4,
 	));
 
 }
