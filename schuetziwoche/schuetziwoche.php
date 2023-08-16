@@ -403,7 +403,7 @@ function schuetziwoche_liste() {
 	global $wpdb;
 	$config = schuetziwoche_get_config();
 
-	$orderby = 'name';
+	$orderby = 'abteilung';
 	if ($_GET['orderby']=='date') $orderby = 'date';
 	if ($_GET['orderby']=='abteilung') $orderby = 'abteilung';
 
