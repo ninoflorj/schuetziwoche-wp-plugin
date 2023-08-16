@@ -238,27 +238,28 @@ function schuetziwoche_admin_registrations(){
     //Fetch, prepare, sort, and filter our data...
     $testListTable->prepare_items();
     
-    $out = '<style>
-                .payment {
-                    margin-top: 5px !important;
-                    margin-bottom: 5px !important;
-                }
-            </style>
-            <div class="wrap">
+    ?>
+    <style>
+        .payment {
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+        }
+    </style>
+    <div class="wrap">
         
         <div id="icon-users" class="icon32"><br/></div>
+        <h2>Anmeldungen</h2>
         
         <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
         <form id="movies-filter" method="get">
             <!-- For plugins, we also need to ensure that the form posts back to our current page -->
-            <input type="hidden" name="page" value="'.$_REQUEST['page'] .'"/>
-            <!-- Now we can render the completed list table -->'
-            .$testListTable->display()
-        .'</form>
+            <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+            <!-- Now we can render the completed list table -->
+            <?php $testListTable->display() ?>
+        </form>
         
-    </div>';
-
-    echo $out;
+    </div>
+    <?php
 }
 
 function schuetziwoche_admin_add_page(){
