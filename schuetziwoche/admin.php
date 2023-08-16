@@ -238,7 +238,13 @@ function schuetziwoche_admin_registrations(){
     //Fetch, prepare, sort, and filter our data...
     $testListTable->prepare_items();
     
-    $out = '<div class="wrap">
+    $out = '<style>
+                .payment {
+                    margin-top: 5px !important;
+                    margin-bottom: 5px !important;
+                }
+            </style>
+            <div class="wrap">
         
         <div id="icon-users" class="icon32"><br/></div>
         

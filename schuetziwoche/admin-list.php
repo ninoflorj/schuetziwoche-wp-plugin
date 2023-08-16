@@ -213,13 +213,7 @@ class TT_Example_List_Table extends WP_List_Table {
             else {
                 $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" style="display:none;" ' .($item['fr_payed']?'checked="checked"':'') .'/></p>';
             }
-            $out = '<style>
-                .payment {
-                    margin-top: 5px !important;
-                    margin-bottom: 5px !important;
-                }
-            </style>
-            <form method="post">
+            $out = '<form method="post">
             <input type="hidden" name="id" value="'.$item['id'].'" />'
             .$checkboxes
             .'<input type="submit" name="submit" value="Speichern">
