@@ -1,5 +1,26 @@
 <?php
 
+// Handle the form submission of payment status
+// store the URL of the previous page in a session variable
+$_SESSION['prev_page'] = $_SERVER['HTTP_REFERER'];
+
+if (isset($_POST['submit'])) {
+    global $wpdb;
+    $config = schuetziwoche_get_config();
+    $query = "UPDATE ".$config['table']." SET
+    mo_payed = '".($_POST['mo']?1:0)."' ,
+    di_payed = '".($_POST['di']?1:0)."' ,
+    mi_payed = '".($_POST['mi']?1:0)."' ,
+    do_payed = '".($_POST['do']?1:0)."' ,
+    fr_payed = '".($_POST['fr']?1:0)."'
+    WHERE id = %s LIMIT 1";
+    $wpdb->query($wpdb->prepare($query, $_POST['id']));
+    // redirect to the previous page to prevent form resubmission
+    header("Location: ".$_SESSION['prev_page']);
+    exit();
+}
+
+
 if(!class_exists('WP_List_Table')){
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
@@ -56,16 +77,21 @@ class TT_Example_List_Table extends WP_List_Table {
     function column_default($item, $column_name){
         switch($column_name){
             case 'name':
-            case 'abteilung':
-            case 'email':
-            case 'isvegi':
                 return $item[$column_name];
+            case 'abteilung':
+                return $item[$column_name];
+            case 'email':
+                return $item[$column_name];
+            case 'isvegi':
+                return $item[$column_name]? 'Ja' : 'Nein';
             case 'date':
                 $date = new DateTime('@' . $item['date']);
                 $date->setTimezone(new DateTimeZone('Europe/Zurich'));
                 return $date->format('d.m.Y H:i');
             case 'anmeldung':
                 return $this->getAnmeldungDisplay($item);
+            case 'pay_status':
+                return 'Fehler';
             default:
                 return print_r($item,true); //Show the whole array for troubleshooting purposes
         }
@@ -130,6 +156,77 @@ class TT_Example_List_Table extends WP_List_Table {
             /*$3%s*/ $this->row_actions($actions)
         );
     }
+
+    function column_pay_status($item){
+        $config = schuetziwoche_get_config();
+        $abteilungen_paying = explode(';', $config['abteilungen_paying']);
+        $checkboxes = '';
+        if (in_array($item['abteilung'], $abteilungen_paying)) {
+            return 'Abteilung bezahlt';
+        }
+        elseif (!$item[mo_eat] && !$item[mo_sleep] && !$item[di_eat] && !$item[di_sleep] && !$item[mi_eat] && !$item[mi_sleep] && !$item[do_eat] && !$item[do_sleep] && !$item[fr_eat] && !$item[fr_sleep]) {
+            return 'Keine Anmeldung';
+        }
+        else {
+            if ($item['mo_eat'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_eat'] .' Fr.)</p>';
+            }
+            elseif ($item['mo_sleep'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_sleep'] .' Fr.)</p>';
+            }
+            else {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" style="display:none;" ' .($item['mo_payed']?'checked="checked"':'') .'/></p>';
+            }
+            if ($item['di_eat'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_eat'] .' Fr.)</p>';
+            }
+            elseif ($item['di_sleep'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_sleep'] .' Fr.)</p>';
+            }
+            else {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" style="display:none;" ' .($item['di_payed']?'checked="checked"':'') .'/></p>';
+            }
+            if ($item['mi_eat'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_eat'] .' Fr.)</p>';
+            }
+            elseif ($item['mi_sleep'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_sleep'] .' Fr.)</p>';
+            }
+            else {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" style="display:none;" ' .($item['mi_payed']?'checked="checked"':'') .'/></p>';
+            }
+            if ($item['do_eat'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_eat'] .' Fr.)</p>';
+            }
+            elseif ($item['do_sleep'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_sleep'] .' Fr.)</p>';
+            }
+            else {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" style="display:none;" ' .($item['do_payed']?'checked="checked"':'') .'/></p>';
+            }
+            if ($item['fr_eat'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_eat'] .' Fr.)</p>';
+            }
+            elseif ($item['fr_sleep'] == 1) {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_sleep'] .' Fr.)</p>';
+            }
+            else {
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" style="display:none;" ' .($item['fr_payed']?'checked="checked"':'') .'/></p>';
+            }
+            $out = '<style>
+                .payment {
+                    margin-top: 5px !important;
+                    margin-bottom: 5px !important;
+                }
+            </style>
+            <form method="post">
+            <input type="hidden" name="id" value="'.$item['id'].'" />'
+            .$checkboxes
+            .'<input type="submit" name="submit" value="Speichern">
+            </form>';
+            return $out;
+        }
+    }
     
     /** ************************************************************************
      * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
@@ -170,7 +267,8 @@ class TT_Example_List_Table extends WP_List_Table {
             'email'     => 'E-Mail',
             'date'      => 'Datum (Europe/Zurich)',
             'isvegi'    => 'Vegi',
-            'anmeldung' => 'Anmeldung'
+            'anmeldung' => 'Anmeldung',
+            'pay_status'=> 'Bezahlstatus',
         );
         return $columns;
     }
