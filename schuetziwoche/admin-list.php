@@ -169,54 +169,54 @@ class TT_Example_List_Table extends WP_List_Table {
         }
         else {
             if ($item['mo_eat'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_eat'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" form="pay_form_' .$item['id'] .'" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_eat'] .' Fr.)</p>';
             }
             elseif ($item['mo_sleep'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_sleep'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" form="pay_form_' .$item['id'] .'" value="1" ' .($item['mo_payed']?'checked="checked"':'') .'/> Mo (' .$config['cost_sleep'] .' Fr.)</p>';
             }
             else {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" value="1" style="display:none;" ' .($item['mo_payed']?'checked="checked"':'') .'/></p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mo" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['mo_payed']?'checked="checked"':'') .'/></p>';
             }
             if ($item['di_eat'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_eat'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" form="pay_form_' .$item['id'] .'" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_eat'] .' Fr.)</p>';
             }
             elseif ($item['di_sleep'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_sleep'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" form="pay_form_' .$item['id'] .'" value="1" ' .($item['di_payed']?'checked="checked"':'') .'/> Di (' .$config['cost_sleep'] .' Fr.)</p>';
             }
             else {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" value="1" style="display:none;" ' .($item['di_payed']?'checked="checked"':'') .'/></p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="di" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['di_payed']?'checked="checked"':'') .'/></p>';
             }
             if ($item['mi_eat'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_eat'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" form="pay_form_' .$item['id'] .'" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_eat'] .' Fr.)</p>';
             }
             elseif ($item['mi_sleep'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_sleep'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" form="pay_form_' .$item['id'] .'" value="1" ' .($item['mi_payed']?'checked="checked"':'') .'/> Mi (' .$config['cost_sleep'] .' Fr.)</p>';
             }
             else {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" value="1" style="display:none;" ' .($item['mi_payed']?'checked="checked"':'') .'/></p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="mi" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['mi_payed']?'checked="checked"':'') .'/></p>';
             }
             if ($item['do_eat'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_eat'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" form="pay_form_' .$item['id'] .'" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_eat'] .' Fr.)</p>';
             }
             elseif ($item['do_sleep'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_sleep'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" form="pay_form_' .$item['id'] .'" value="1" ' .($item['do_payed']?'checked="checked"':'') .'/> Do (' .$config['cost_sleep'] .' Fr.)</p>';
             }
             else {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" value="1" style="display:none;" ' .($item['do_payed']?'checked="checked"':'') .'/></p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="do" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['do_payed']?'checked="checked"':'') .'/></p>';
             }
             if ($item['fr_eat'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_eat'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" form="pay_form_' .$item['id'] .'" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_eat'] .' Fr.)</p>';
             }
             elseif ($item['fr_sleep'] == 1) {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_sleep'] .' Fr.)</p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" form="pay_form_' .$item['id'] .'" value="1" ' .($item['fr_payed']?'checked="checked"':'') .'/> Fr (' .$config['cost_sleep'] .' Fr.)</p>';
             }
             else {
-                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" value="1" style="display:none;" ' .($item['fr_payed']?'checked="checked"':'') .'/></p>';
+                $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['fr_payed']?'checked="checked"':'') .'/></p>';
             }
-            $out = '<form method="post">
-            <input type="hidden" name="id" value="'.$item['id'].'" />'
+            $out = '<form method="post" id="pay_form_' .$item['id'] .'">
+            <input type="hidden" name="id" value="'.$item['id'].'" form="pay_form_' .$item['id'] .'">'
             .$checkboxes
-            .'<input type="submit" name="submit" value="Speichern">
+            .'<input type="submit" name="submit" value="Speichern" form="pay_form_' .$item['id'] .'">
             </form>';
             return $out;
         }
@@ -233,7 +233,7 @@ class TT_Example_List_Table extends WP_List_Table {
      **************************************************************************/
     function column_cb($item){
         return sprintf(
-            '<input type="checkbox" name="%1$s[]" value="%2$s" />',
+            '<input type="checkbox" name="%1$s[]" value="%2$s" form="movies-filter" />',
             /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
             /*$2%s*/ $item['id']                //The value of the checkbox should be the record's id
         );
