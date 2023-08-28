@@ -390,8 +390,8 @@ function schuetziwoche_save() {
           'Content-Transfer-Encoding: 8bit' . "\r\n" .
           'X-Mailer: PHP/' . phpversion();
 		
-		mail($_POST['email'], $subject, $nachricht, $header);
-		mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')), $header);
+		wp_mail($_POST['email'], $subject, $nachricht);
+		wp_mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')));
 		
 		return $out;			
 	}
