@@ -318,8 +318,10 @@ function schuetziwoche_anmeldung() {
 			</tr>
 		</table>
 		<br>
+		<div class="row">
+			<div class="value"><label><input type="checkbox" name="dse" value="1" required> Ich akzeptiere, dass meine eingegebenen Daten der Cyon Webhosting GmbH gesendet und dort gespeichert werden. Die Daten werden lediglich vom Schützi-OK verwendet und nach der Schütziwoche gelöscht.</label></div>
+		</div>
 		<br>
-
 		<input type="submit" name="submit" value="Anmelden">
 
 		</form>
@@ -375,7 +377,7 @@ function schuetziwoche_save() {
 
 		$nachricht = 'Hallo '.$_POST['pfadiname'].',' . "\r\n" .
 			'Du hast dich für die Schütziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
-			'Falls du deine Anmeldung ändern mächtest kannst du dies mit folgendem Link tun:' . "\r\n" .
+			'Falls du deine Anmeldung ändern möchtest kannst du dies mit folgendem Link tun:' . "\r\n" .
 			get_option('home') . add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)) . "\r\n" .
 			'Wir bitten dich, dies auch wirklich zu tun, falls sich deine Pläne ändern!' . "\r\n" . "\r\n" .
 			'Ausserdem sollte sich das Gerät auf welchem du dich angemeldet hast an dich erinnern, wenn du die Seite erneut aufrufst. Der Link sollte dann also gar nicht nötig sein.' . "\r\n" .
