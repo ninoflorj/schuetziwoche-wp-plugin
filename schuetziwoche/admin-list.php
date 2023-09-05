@@ -4,7 +4,7 @@
 // store the URL of the previous page in a session variable
 $_SESSION['prev_page'] = $_SERVER['HTTP_REFERER'];
 
-if (isset($_POST['submit'])) {
+if (isset($_POST['schuetzi_id'])) {
     global $wpdb;
     $config = schuetziwoche_get_config();
     $query = "UPDATE ".$config['table']." SET
@@ -14,7 +14,7 @@ if (isset($_POST['submit'])) {
     do_payed = '".($_POST['do']?1:0)."' ,
     fr_payed = '".($_POST['fr']?1:0)."'
     WHERE id = %s LIMIT 1";
-    $wpdb->query($wpdb->prepare($query, $_POST['id']));
+    $wpdb->query($wpdb->prepare($query, $_POST['schuetzi_id']));
     // redirect to the previous page to prevent form resubmission
     header("Location: ".$_SESSION['prev_page']);
     exit();
@@ -214,7 +214,7 @@ class TT_Example_List_Table extends WP_List_Table {
                 $checkboxes .= '<p class="payment"><input type="checkbox" name="fr" form="pay_form_' .$item['id'] .'" value="1" style="display:none;" ' .($item['fr_payed']?'checked="checked"':'') .'/></p>';
             }
             $out = '<form method="post" id="pay_form_' .$item['id'] .'">
-            <input type="hidden" name="id" value="'.$item['id'].'" form="pay_form_' .$item['id'] .'">'
+            <input type="hidden" name="schuetzi_id" value="'.$item['id'].'" form="pay_form_' .$item['id'] .'">'
             .$checkboxes
             .'<input type="submit" name="submit" value="Speichern" form="pay_form_' .$item['id'] .'">
             </form>';
