@@ -514,7 +514,7 @@ function schuetziwoche_install() {
 	update_option(SCHUETZIWOCHE_OPTIONS, array(
 		'start_date' => '1378684800',
 		'limit_eat' => 10,
-		'limit_sleep' => 24,
+		'limit_sleep' => 27,
 		'email_sender_address' => 'info@example.com',
 		'email_notification_address' => 'info@example.com',
 		'color_bg' => '#EEE',
