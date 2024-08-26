@@ -246,7 +246,8 @@ function schuetziwoche_update() {
 			WHERE hash = %s LIMIT 1";
 			
 		$wpdb->query($wpdb->prepare($query, $_REQUEST['sw_s']));
-		$out  = 'Angaben ge&auml;ndert!<br><br>';
+		$out  = '<b>Angaben ge&auml;ndert.</b> Wir sehen uns an der Schütziwoche!<br><br>';
+		$out .= '<div style="width:100%;height:0;padding-bottom:75%;position:relative;"><iframe src="https://giphy.com/embed/l3q2Z6S6n38zjPswo" width="100%" height="100%" style="position:absolute; pointer-events: none;" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><br>';
 		$out .= '<a href="'.add_query_arg(array('swpage' => 'liste', 'sw_s' => false)).'"><b>Zur&uuml;ck zur &Uuml;bersicht &raquo;</b></a>';
 	} else {
 		$out = 'Anmeldung nicht gefunden. Hast du den richtigen Link genommen?';
@@ -425,6 +426,7 @@ function schuetziwoche_save() {
 		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit dem Link, um die Anmeldung zu ändern. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
 		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link im Mail oder über den "Anmeldung ändern" Link auf der Anmeldeseite, falls sich deine Pläne ändern.</b>';
 		$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.<br><br>';
+		$out .= '<div style="width:100%;height:0;padding-bottom:75%;position:relative;"><iframe src="https://giphy.com/embed/111ebonMs90YLu" width="100%" height="100%" style="position:absolute; pointer-events: none;" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><br>';
 		$out .= '<a href="'.add_query_arg('swpage','liste').'"><b>Wer hat sich sonst noch angemeldet? &raquo;</b></a><br><br>';
 		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'"><b>Anmeldung nochmals &auml;ndern &raquo;</b></a><br><br>';
 		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
