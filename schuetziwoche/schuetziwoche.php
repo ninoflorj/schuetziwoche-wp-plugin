@@ -176,8 +176,10 @@ function schuetziwoche_bearbeiten() {
 		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->do_sleep?'checked="checked"':'').' name="do_sleep" value="1" '.(time()>$config['date'][4]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
 		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->fr_eat?'checked="checked"':'').' name="fr_eat" value="1" '.(time()>($config['date'][5]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
 		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->fr_sleep?'checked="checked"':'').' name="fr_sleep" value="1" '.(time()>$config['date'][5]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
-		$out .= '</tr>
-			</table>';
+		$out .= '</tr>';
+		$out .= get_paystatus_row($row);
+		$out .= '</table>';
+		$out .= '<i>*<b>Du kannst vor Ort bezahlen.</b><br>Der Bezahlstatus wird manuell vom Schützi-OK aktualisiert, daher kann es einige Stunden dauern, bis der Status nach deiner Zahlung angepasst wird.</i><br><br>';
 		$out .= '<input type="submit" name="submit" value="Speichern">';
 		$out .= '</form>';
 		$out .= '<a href="'.add_query_arg(array('swpage' => 'liste', 'sw_s' => false)).'">Zur&uuml;ck zur &Uuml;bersicht</a>';
@@ -261,6 +263,65 @@ function get_abteilungen_dropdown() {
 		$output .= '<option value="' . $abteilung . '">' . $abteilung . '</option>';
 	}
 	return $output;
+}
+
+function get_paystatus_row($item){
+	$config = schuetziwoche_get_config();
+	$abteilungen_paying = explode(';', $config['abteilungen_paying']);
+	$out = '';
+	$out .= '<tr><td><b>Bezahlt?*:</b><br>(Zu bezahlen)</td>';
+	if (in_array($item->abteilung, $abteilungen_paying)) {
+		$out .= '<td colspan="10"><b>&#128176; Abteilung übernimmt die Kosten &#128176;</b></td>';
+	}
+	else {
+		if ($item->mo_eat == 1) {
+			$out .= '<td colspan="2">' .($item->mo_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
+		}
+		elseif ($item->mo_sleep == 1) {
+			$out .= '<td colspan="2">' .($item->mo_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
+		}
+		else {
+			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		}
+		if ($item->di_eat == 1) {
+			$out .= '<td colspan="2">' .($item->di_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
+		}
+		elseif ($item->di_sleep == 1) {
+			$out .= '<td colspan="2">' .($item->di_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
+		}
+		else {
+			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		}
+		if ($item->mi_eat == 1) {
+			$out .= '<td colspan="2">' .($item->mi_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
+		}
+		elseif ($item->mi_sleep == 1) {
+			$out .= '<td colspan="2">' .($item->mi_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
+		}
+		else {
+			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		}
+		if ($item->do_eat == 1) {
+			$out .= '<td colspan="2">' .($item->do_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
+		}
+		elseif ($item->do_sleep == 1) {
+			$out .= '<td colspan="2">' .($item->do_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
+		}
+		else {
+			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		}
+		if ($item->fr_eat == 1) {
+			$out .= '<td colspan="2">' .($item->fr_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
+		}
+		elseif ($item->fr_sleep == 1) {
+			$out .= '<td colspan="2">' .($item->fr_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
+		}
+		else {
+			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		}
+	}
+	$out .= '</tr>';
+	return $out;
 }
 
 function schuetziwoche_anmeldung() {
