@@ -164,7 +164,7 @@ class TT_Example_List_Table extends WP_List_Table {
         if (in_array($item['abteilung'], $abteilungen_paying)) {
             return 'Abteilung bezahlt';
         }
-        elseif (!$item[mo_eat] && !$item[mo_sleep] && !$item[di_eat] && !$item[di_sleep] && !$item[mi_eat] && !$item[mi_sleep] && !$item[do_eat] && !$item[do_sleep] && !$item[fr_eat] && !$item[fr_sleep]) {
+        elseif (!$item['mo_eat'] && !$item['mo_sleep'] && !$item['di_eat'] && !$item['di_sleep'] && !$item['mi_eat'] && !$item['mi_sleep'] && !$item['do_eat'] && !$item['do_sleep'] && !$item['fr_eat'] && !$item['fr_sleep']) {
             return 'Keine Anmeldung';
         }
         else {
