@@ -249,7 +249,7 @@ function schuetziwoche_admin_registrations(){
         
         <div id="icon-users" class="icon32"><br/></div>
         <h2>Anmeldungen</h2>
-        
+        <p><i><b>Achtung:</b> Die Mehrfachaktionen ganz links sind aufgrund eines unbekannten Bugs nicht funktionsfähig! Es muss somit <b>jede Zeile einzeln</b> gelöscht werden vor einer neuen Schütziwoche.</i></p>
         <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
         <form id="movies-filter" method="get">
             <!-- For plugins, we also need to ensure that the form posts back to our current page -->
