@@ -49,6 +49,7 @@ if ( is_admin() )
 
 //tell wordpress to register the schuetziwoche shortcode
 add_shortcode("schuetziwoche", "schuetziwoche_handler");
+add_shortcode("paying_abteilungen", "schuetziwoche_paying_abteilungen_handler");
 add_action('wp_head', 'schuetziwoche_css');
 
 // Set the Timezone to Display when date() is called
@@ -57,6 +58,13 @@ date_default_timezone_set('Europe/Zurich');
 function schuetziwoche_handler() {
 	$output = schuetziwoche_function();
 	return $output;
+}
+
+function schuetziwoche_paying_abteilungen_handler() {
+	$config = schuetziwoche_get_config();
+	$abteilungen = array_filter(array_map('trim', explode(';', $config['abteilungen_paying'])));
+
+	return implode(', ', $abteilungen);
 }
 
 function schuetziwoche_function() {
