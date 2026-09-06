@@ -99,22 +99,24 @@ class TT_Example_List_Table extends WP_List_Table {
 
     function getAnmeldungDisplay($item){
         $out = '';
-        $out .= $this->getBlock($item['mo_eat'], 'eat');
-        $out .= $this->getBlock($item['mo_sleep'], 'sleep');
-        $out .= $this->getBlock($item['di_eat'], 'eat');
-        $out .= $this->getBlock($item['di_sleep'], 'sleep');
-        $out .= $this->getBlock($item['mi_eat'], 'eat');
-        $out .= $this->getBlock($item['mi_sleep'], 'sleep');
-        $out .= $this->getBlock($item['do_eat'], 'eat');
-        $out .= $this->getBlock($item['do_sleep'], 'sleep');
-        $out .= $this->getBlock($item['fr_eat'], 'eat');
-        $out .= $this->getBlock($item['fr_sleep'], 'sleep');
+        $out .= $this->getBlock($item['mo_eat'], 'eat', 'mo_eat');
+        $out .= $this->getBlock($item['mo_sleep'], 'sleep', 'mo_sleep');
+        $out .= $this->getBlock($item['di_eat'], 'eat', 'di_eat');
+        $out .= $this->getBlock($item['di_sleep'], 'sleep', 'di_sleep');
+        $out .= $this->getBlock($item['mi_eat'], 'eat', 'mi_eat');
+        $out .= $this->getBlock($item['mi_sleep'], 'sleep', 'mi_sleep');
+        $out .= $this->getBlock($item['do_eat'], 'eat', 'do_eat');
+        $out .= $this->getBlock($item['do_sleep'], 'sleep', 'do_sleep');
+        $out .= $this->getBlock($item['fr_eat'], 'eat', 'fr_eat');
+        $out .= $this->getBlock($item['fr_sleep'], 'sleep', 'fr_sleep');
         return $out;
     }
 
-    function getBlock($val, $type){
+    function getBlock($val, $type, $field){
         $config = schuetziwoche_get_config();
-        $out = '<div style="display: inline-block; width: 20px; height: 20px; background: #EEE; margin: 2px; vertical-align: top;">';
+        $background = !empty($config['disabled'][$field]) ? '#DDD' : '#EEE';
+        $opacity = !empty($config['disabled'][$field]) ? ' opacity: 0.6;' : '';
+        $out = '<div style="display: inline-block; width: 20px; height: 20px; background: ' . $background . '; margin: 2px; vertical-align: top;' . $opacity . '">';
         if ($val == '1'){
             $out .= '<img src="'.$config['imgurl'].$type.'.gif"/>';
         } else {
@@ -184,13 +186,19 @@ class TT_Example_List_Table extends WP_List_Table {
         $eat_field = $day . '_eat';
         $sleep_field = $day . '_sleep';
         $is_disabled = false;
-        if ($item[$eat_field] == 1) {
+        if ($item[$eat_field] == 1 && empty($config['disabled'][$eat_field])) {
             $cost = $config['cost_eat'];
-            $is_disabled = !empty($config['disabled'][$eat_field]);
+        }
+        elseif ($item[$sleep_field] == 1 && empty($config['disabled'][$sleep_field])) {
+            $cost = $config['cost_sleep'];
+        }
+        elseif ($item[$eat_field] == 1) {
+            $cost = $config['cost_eat'];
+            $is_disabled = true;
         }
         elseif ($item[$sleep_field] == 1) {
             $cost = $config['cost_sleep'];
-            $is_disabled = !empty($config['disabled'][$sleep_field]);
+            $is_disabled = true;
         }
         else {
             return '<p class="payment"><input type="checkbox" name="' . $day . '" form="pay_form_' . $item['id'] . '" value="1" style="display:none;" ' . ($item[$day . '_payed'] ? 'checked="checked"' : '') . '/></p>';
@@ -198,7 +206,7 @@ class TT_Example_List_Table extends WP_List_Table {
 
         $label = strtoupper($day) . ' (' . $cost . ' Fr.)';
         if ($is_disabled) {
-            return '<p class="payment" style="color:#888; background:#ddd; padding:2px 4px;"><input type="hidden" name="' . $day . '" form="pay_form_' . $item['id'] . '" value="' . ($item[$day . '_payed'] ? '1' : '0') . '"/><span>' . $label . ' deaktiviert</span></p>';
+            return '<p class="payment" style="color:#888; background:#ddd; padding:2px 4px;"><input type="hidden" name="' . $day . '" form="pay_form_' . $item['id'] . '" value="' . ($item[$day . '_payed'] ? '1' : '0') . '"/><input type="checkbox" value="1" disabled="disabled" ' . ($item[$day . '_payed'] ? 'checked="checked"' : '') . '/> ' . $label . ' Tag deaktiviert</p>';
         }
         return '<p class="payment"><input type="checkbox" name="' . $day . '" form="pay_form_' . $item['id'] . '" value="1" ' . ($item[$day . '_payed'] ? 'checked="checked"' : '') . '/> ' . $label . '</p>';
     }
