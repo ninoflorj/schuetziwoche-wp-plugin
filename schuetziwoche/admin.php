@@ -11,6 +11,7 @@ add_action('admin_init', 'schuetziwoche_admin_init');
 
 function schuetziwoche_admin_init(){
     register_setting(SCHUETZIWOCHE_OPTIONS_GROUP, SCHUETZIWOCHE_OPTIONS, 'schuetziwoche_sanitize_options');
+    add_action('update_option_' . SCHUETZIWOCHE_OPTIONS, 'schuetziwoche_disabled_notice', 10, 3);
 }
 
 function schuetziwoche_sanitize_options($options) {
@@ -21,24 +22,38 @@ function schuetziwoche_sanitize_options($options) {
     return $options;
 }
 
-add_action('admin_menu', 'schuetziwoche_admin_add_page');
-
-
-function schuetziwoche_admin_options_page(){
+function schuetziwoche_disabled_notice($old_options, $new_options) {
     global $wpdb;
-	$options = get_option(SCHUETZIWOCHE_OPTIONS);
+
+    $old_disabled = isset($old_options['disabled']) && is_array($old_options['disabled']) ? $old_options['disabled'] : array();
+    $new_disabled = isset($new_options['disabled']) && is_array($new_options['disabled']) ? $new_options['disabled'] : array();
+    $newly_disabled = array_diff(array_keys($new_disabled), array_keys($old_disabled));
+    if (!$newly_disabled) {
+        return;
+    }
+
     $config = schuetziwoche_get_config();
     $people = array();
-    $disabled_fields = isset($options['disabled']) && is_array($options['disabled'])
-        ? array_intersect(array_keys($options['disabled']), schuetziwoche_get_fields())
-        : array();
-    foreach ($disabled_fields as $field) {
+    foreach ($newly_disabled as $field) {
         $rows = $wpdb->get_results("SELECT name, email FROM {$config['table']} WHERE {$field} = 1");
         foreach ($rows as $row) {
             $people[$row->email] = $row->name . ' (' . $row->email . ')';
         }
     }
+
     if ($people) {
+        set_transient('schuetziwoche_disabled_notice_' . get_current_user_id(), $people, MINUTE_IN_SECONDS * 5);
+    }
+}
+
+add_action('admin_menu', 'schuetziwoche_admin_add_page');
+
+
+function schuetziwoche_admin_options_page(){
+	$options = get_option(SCHUETZIWOCHE_OPTIONS);
+    $people = get_transient('schuetziwoche_disabled_notice_' . get_current_user_id());
+    if ($people) {
+        delete_transient('schuetziwoche_disabled_notice_' . get_current_user_id());
         $people_notice = 'Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:\n\n' . implode("\n", $people);
         echo '<div class="notice notice-info"><p><b>Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:</b><br>' . esc_html(implode(', ', $people)) . '</p></div>';
         echo '<script>window.alert(' . json_encode($people_notice) . ');</script>';
