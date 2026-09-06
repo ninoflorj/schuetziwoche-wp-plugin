@@ -199,16 +199,16 @@ function schuetziwoche_bearbeiten() {
 			</tr>
 			<tr>';
 		$out .= '<td><img src="'.$config['imgurl'].'vegi.png" title="Ich esse keine Tiere!"><br><input type="checkbox" '.($row->isvegi?'checked="checked"':'').' name="isvegi" value="1"></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat', $row->mo_eat).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep', $row->mo_sleep).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat', $row->di_eat).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep', $row->di_sleep).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat', $row->mi_eat).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep', $row->mi_sleep).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat', $row->do_eat).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep', $row->do_sleep).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat', $row->fr_eat).'</td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep', $row->fr_sleep).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'mo_eat') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat', $row->mo_eat).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'mo_sleep') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep', $row->mo_sleep).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'di_eat') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat', $row->di_eat).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'di_sleep') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep', $row->di_sleep).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'mi_eat') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat', $row->mi_eat).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'mi_sleep') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep', $row->mi_sleep).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'do_eat') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat', $row->do_eat).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'do_sleep') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep', $row->do_sleep).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'fr_eat') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat', $row->fr_eat).'</td>';
+		$out .= '<td class="'.(schuetziwoche_is_disabled($config, 'fr_sleep') ? 'uebersicht_tag_disabled' : '').'"><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep', $row->fr_sleep).'</td>';
 		$out .= '</tr>';
 		$out .= get_paystatus_row($row);
 		$out .= '</table>';
