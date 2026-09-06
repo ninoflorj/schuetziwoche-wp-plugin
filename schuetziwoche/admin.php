@@ -65,11 +65,12 @@ function schuetziwoche_admin_options_page(){
                 </tr>
                 <tr valign="top"><th scope="row">Anmeldungen für gewisse Tage sperren:</th>
                     <td><table><tr><th>Tag</th><th>Essen</th><th>Übernachtung</th></tr>';
-                    foreach (schuetziwoche_get_fields() as $field) {
-                        $day = strtoupper(substr($field, 0, 2));
-                        $type = strpos($field, '_eat') ? 'eat' : 'sleep';
-                        $checked = !empty($options['disabled'][$field]) ? ' checked="checked"' : '';
-                        echo '<tr><td>' . esc_html($day) . '</td><td>' . ($type === 'eat' ? '<label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $field . ']" value="1"' . $checked . '> sperren</label>' : '') . '</td><td>' . ($type === 'sleep' ? '<label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $field . ']" value="1"' . $checked . '> sperren</label>' : '') . '</td></tr>';
+                    foreach (array('mo', 'di', 'mi', 'do', 'fr') as $day) {
+                        $eat_field = $day . '_eat';
+                        $sleep_field = $day . '_sleep';
+                        $eat_checked = !empty($options['disabled'][$eat_field]) ? ' checked="checked"' : '';
+                        $sleep_checked = !empty($options['disabled'][$sleep_field]) ? ' checked="checked"' : '';
+                        echo '<tr><td>' . esc_html(strtoupper($day)) . '</td><td><label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $eat_field . ']" value="1"' . $eat_checked . '> sperren</label></td><td><label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $sleep_field . ']" value="1"' . $sleep_checked . '> sperren</label></td></tr>';
                     }
                     echo '</table></td>
                 </tr>
