@@ -82,6 +82,8 @@ function schuetziwoche_function() {
 		$output = schuetziwoche_anmeldung();
 	}elseif ($_REQUEST['swpage']=='save'){
 		$output = schuetziwoche_save();
+	}elseif ($_REQUEST['swpage']=='save_done'){
+		$output = schuetziwoche_save_done();
 	}elseif ($_REQUEST['swpage']=='liste'){
 		$output = schuetziwoche_liste();
 	}elseif ($_REQUEST['swpage']=='bearbeiten_email' || $_REQUEST['swpage']=='force_bearbeiten_email'){
@@ -407,6 +409,34 @@ function schuetziwoche_save() {
 	}else{
 		global $wpdb;
 		$config = schuetziwoche_get_config();
+		$name = sanitize_text_field($_POST['pfadiname']);
+		$email = strtolower(trim(sanitize_email($_POST['email'])));
+		$abteilung = sanitize_text_field($_POST['abteilung']);
+		if (!$name || !is_email($email)) {
+			return 'Bitte einen gültigen Namen und eine gültige Emailadresse eingeben!';
+		}
+
+		$existing = $wpdb->get_row($wpdb->prepare("SELECT id, hash FROM ".$config['table']." WHERE LOWER(email) = LOWER(%s) ORDER BY id ASC LIMIT 1", $email));
+		if ($existing) {
+			$time = time();
+			$wpdb->update($config['table'], array(
+				'name' => $name,
+				'email' => $email,
+				'abteilung' => $abteilung,
+				'isvegi' => !empty($_POST['isvegi']) ? 1 : 0,
+				'mo_eat' => !empty($_POST['mo_eat']) && $time < ($config['date'][1] + $config['limit_eat']) ? 1 : 0,
+				'mo_sleep' => !empty($_POST['mo_sleep']) && $time < ($config['date'][1] + $config['limit_sleep']) ? 1 : 0,
+				'di_eat' => !empty($_POST['di_eat']) && $time < ($config['date'][2] + $config['limit_eat']) ? 1 : 0,
+				'di_sleep' => !empty($_POST['di_sleep']) && $time < ($config['date'][2] + $config['limit_sleep']) ? 1 : 0,
+				'mi_eat' => !empty($_POST['mi_eat']) && $time < ($config['date'][3] + $config['limit_eat']) ? 1 : 0,
+				'mi_sleep' => !empty($_POST['mi_sleep']) && $time < ($config['date'][3] + $config['limit_sleep']) ? 1 : 0,
+				'do_eat' => !empty($_POST['do_eat']) && $time < ($config['date'][4] + $config['limit_eat']) ? 1 : 0,
+				'do_sleep' => !empty($_POST['do_sleep']) && $time < ($config['date'][4] + $config['limit_sleep']) ? 1 : 0,
+				'fr_eat' => !empty($_POST['fr_eat']) && $time < ($config['date'][5] + $config['limit_eat']) ? 1 : 0,
+				'fr_sleep' => !empty($_POST['fr_sleep']) && $time < ($config['date'][5] + $config['limit_sleep']) ? 1 : 0,
+			), array('id' => $existing->id));
+			return schuetziwoche_save_done($existing->hash, true);
+		}
 
 		$time = time();
 		$hash = substr(md5($time), 0, 14);
@@ -428,26 +458,8 @@ function schuetziwoche_save() {
 			'".($_POST['fr_eat']&&time()<($config['date'][5]+$config['limit_eat'])?1:0)."',
 			'".($_POST['fr_sleep']&&time()<$config['date'][5]+$config['limit_sleep']?1:0)."'
 			)";
-		$wpdb->query($wpdb->prepare($query, $_POST['pfadiname'], $_POST['email'], $_POST['abteilung']));
+		$wpdb->query($wpdb->prepare($query, $name, $email, $abteilung));
 		
-		$out  = '<h2>Anmelden</h2>';
-		$out .= 'Danke f&uuml;r deine Anmeldung '.$_POST['pfadiname'].', man sieht sich bald an der Sch&uuml;tziwoche!<br><br>';
-		$out .= 'Du hast auch ein Best&auml;tigungsmail bekommen mit dem Link, um die Anmeldung zu ändern. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
-		$out .= '<br><b>Bitte ändere deine Anmeldung über den Link im Mail oder über den "Anmeldung ändern" Link auf der Anmeldeseite, falls sich deine Pläne ändern.</b>';
-		$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.<br><br>';
-		$out .= '<div style="width:100%;height:0;padding-bottom:75%;position:relative;"><iframe src="https://giphy.com/embed/111ebonMs90YLu" width="100%" height="100%" style="position:absolute; pointer-events: none;" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><br>';
-		$out .= '<a href="'.add_query_arg('swpage','liste').'"><b>Wer hat sich sonst noch angemeldet? &raquo;</b></a><br>';
-		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'"><b>Anmeldung nochmals &auml;ndern &raquo;</b></a><br>';
-		$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $hash)).'"><b>Bezahlstatus einsehen &raquo;</b></a><br><br>';
-		// Please dont kill me for the following dynamically generated javascript (setting a Cookie from a shortcode is pain in the ass otherwise)
-		$out .= '<script>
-		const d = new Date();
-		d.setTime(d.getTime() + (3*30*24*60*60*1000));
-		let expires = "expires="+ d.toUTCString();
-		// Yes, the next line is dynamically generated on the server. I know its shit.
-		document.cookie = "schuetziwoche_user='.$hash.';" + expires;
-		</script>';
-
 		$nachricht = 'Hallo '.$_POST['pfadiname'].',' . "\r\n" .
 			'Du hast dich für die Schütziwoche '.date('Y', $config['date'][1]).' angemeldet. ' . "\r\n" .
 			'Falls du deine Anmeldung ändern möchtest kannst du dies mit folgendem Link tun:' . "\r\n" .
@@ -465,12 +477,39 @@ function schuetziwoche_save() {
           'Content-Transfer-Encoding: 8bit' . "\r\n" .
           'X-Mailer: PHP/' . phpversion();
 		
-		wp_mail($_POST['email'], $subject, $nachricht);
+		wp_mail($email, $subject, $nachricht);
 		wp_mail($config['email_notification_address'],'[Anmeldung] '.$_POST['pfadiname'],'Neue Anmeldung von '.$_POST['pfadiname'].' ('.$_POST['abteilung'].'), '.$_POST['email']."\n\n ".get_option('home') . add_query_arg(array('swpage' => 'list')));
-		
-		return $out;			
+		return schuetziwoche_save_done($hash, false);
 	}
 
+}
+
+function schuetziwoche_save_done($saved_hash = '', $updated = false) {
+	global $wpdb;
+	$config = schuetziwoche_get_config();
+	$hash = $saved_hash ? $saved_hash : (isset($_REQUEST['sw_s']) ? sanitize_text_field($_REQUEST['sw_s']) : '');
+	$row = $wpdb->get_row($wpdb->prepare("SELECT name, hash FROM ".$config['table']." WHERE hash = %s LIMIT 1", $hash));
+
+	if (!$row) {
+		return 'Anmeldung nicht gefunden.';
+	}
+
+	$out  = '<h2>Anmeldung '.($updated || !empty($_REQUEST['updated']) ? 'aktualisiert' : 'gespeichert').'</h2>';
+	$out .= 'Danke für deine Anmeldung '.$row->name.', man sieht sich bald an der Schütziwoche!<br><br>';
+	$out .= 'Du hast auch ein Bestätigungsmail bekommen mit dem Link, um die Anmeldung zu ändern. Bitte schau auch im Spam-Ordner nach, falls du es nicht findest.';
+	$out .= '<br><b>Bitte ändere deine Anmeldung über den Link im Mail oder über den "Anmeldung ändern" Link auf der Anmeldeseite, falls sich deine Pläne ändern.</b>';
+	$out .= '<br>Dieses Gerät sollte sich auch automatisch an dich erinnern, falls du deine Anmeldung später nochmals ändern willst.<br><br>';
+	$out .= '<div style="width:100%;height:0;padding-bottom:75%;position:relative;"><iframe src="https://giphy.com/embed/111ebonMs90YLu" width="100%" height="100%" style="position:absolute; pointer-events: none;" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><br>';
+	$out .= '<a href="'.add_query_arg('swpage','liste').'"><b>Wer hat sich sonst noch angemeldet? &raquo;</b></a><br>';
+	$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $row->hash)).'"><b>Anmeldung nochmals ändern &raquo;</b></a><br><br>';
+	$out .= '<a href="'.add_query_arg(array('swpage' => 'bearbeiten', 'sw_s' => $row->hash)).'\"><b>Bezahlstatus einsehen &raquo;</b></a><br><br>';
+	$out .= '<script>
+	const d = new Date();
+	d.setTime(d.getTime() + (3*30*24*60*60*1000));
+	document.cookie = "schuetziwoche_user='.$row->hash.'; expires=" + d.toUTCString() + "; path=/";
+	</script>';
+
+	return $out;
 }
 
 function schuetziwoche_liste() {
