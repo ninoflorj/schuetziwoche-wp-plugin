@@ -376,16 +376,16 @@ function schuetziwoche_anmeldung() {
 				<th colspan="2">Fr '. date('d.n',$config['date'][5]) .'</th>
 			</tr>
 			<tr>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat').'</label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'mo_eat') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'mo_sleep') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'di_eat') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'di_sleep') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'mi_eat') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'mi_sleep') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'do_eat') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'do_sleep') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'fr_eat') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat').'</label></td>
+				<td class="'.(schuetziwoche_is_disabled($config, 'fr_sleep') ? 'uebersicht_tag_disabled' : '').'"><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep').'</label></td>
 			</tr>
 		</table>
 		<br>
