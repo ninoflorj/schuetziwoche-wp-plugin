@@ -10,14 +10,37 @@ require_once dirname( __FILE__ ) . '/admin-list.php';
 add_action('admin_init', 'schuetziwoche_admin_init');
 
 function schuetziwoche_admin_init(){
-	register_setting(SCHUETZIWOCHE_OPTIONS_GROUP, SCHUETZIWOCHE_OPTIONS);
+    register_setting(SCHUETZIWOCHE_OPTIONS_GROUP, SCHUETZIWOCHE_OPTIONS, 'schuetziwoche_sanitize_options');
+}
+
+function schuetziwoche_sanitize_options($options) {
+    $options = is_array($options) ? $options : array();
+    $options['disabled'] = isset($options['disabled']) && is_array($options['disabled'])
+        ? array_fill_keys(array_intersect(array_keys($options['disabled']), schuetziwoche_get_fields()), true)
+        : array();
+    return $options;
 }
 
 add_action('admin_menu', 'schuetziwoche_admin_add_page');
 
 
 function schuetziwoche_admin_options_page(){
+    global $wpdb;
 	$options = get_option(SCHUETZIWOCHE_OPTIONS);
+    $config = schuetziwoche_get_config();
+    $people = array();
+    $disabled_fields = isset($options['disabled']) && is_array($options['disabled'])
+        ? array_intersect(array_keys($options['disabled']), schuetziwoche_get_fields())
+        : array();
+    foreach ($disabled_fields as $field) {
+        $rows = $wpdb->get_results("SELECT name, email FROM {$config['table']} WHERE {$field} = 1");
+        foreach ($rows as $row) {
+            $people[$row->email] = $row->name . ' (' . $row->email . ')';
+        }
+    }
+    if ($people) {
+        echo '<div class="notice notice-info"><p><b>Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:</b><br>' . esc_html(implode(', ', $people)) . '</p></div>';
+    }
 
 	echo '<div class="wrap">
         <h2>Sch&uuml;tziwoche Optionen</h2>
@@ -39,6 +62,16 @@ function schuetziwoche_admin_options_page(){
                 </tr>
                 <tr valign="top"><th scope="row">Kosten (nur Übernachtung):</th>
                     <td><input type="text" name="'. SCHUETZIWOCHE_OPTIONS.'[cost_sleep]" value="'. $options['cost_sleep'] .'" /> Fr.</td>
+                </tr>
+                <tr valign="top"><th scope="row">Anmeldungen für gewisse Tage sperren:</th>
+                    <td><table><tr><th>Tag</th><th>Essen</th><th>Übernachtung</th></tr>';
+                    foreach (schuetziwoche_get_fields() as $field) {
+                        $day = strtoupper(substr($field, 0, 2));
+                        $type = strpos($field, '_eat') ? 'eat' : 'sleep';
+                        $checked = !empty($options['disabled'][$field]) ? ' checked="checked"' : '';
+                        echo '<tr><td>' . esc_html($day) . '</td><td>' . ($type === 'eat' ? '<label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $field . ']" value="1"' . $checked . '> sperren</label>' : '') . '</td><td>' . ($type === 'sleep' ? '<label><input type="checkbox" name="' . SCHUETZIWOCHE_OPTIONS . '[disabled][' . $field . ']" value="1"' . $checked . '> sperren</label>' : '') . '</td></tr>';
+                    }
+                    echo '</table></td>
                 </tr>
                 <tr valign="top"><th scope="row">Auswahlmöglichkeiten der Abteilungen <br>(durch Semikolon und <b>ohne</b> Abstand abtrennen)</br>:</th>
                     <td><input style="width: 100%;" type="textarea" name="'. SCHUETZIWOCHE_OPTIONS.'[abteilungen]" value="'. $options['abteilungen'] .'" /></td>

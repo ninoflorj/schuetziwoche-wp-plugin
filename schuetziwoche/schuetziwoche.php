@@ -123,8 +123,33 @@ function schuetziwoche_get_config() {
 	$config['imgurl'] = plugins_url() . '/schuetziwoche/img/';
 	$config['limit_eat'] = $config['limit_eat']*60*60;
 	$config['limit_sleep'] = $config['limit_sleep']*60*60;
+	$config['disabled'] = isset($config['disabled']) && is_array($config['disabled']) ? $config['disabled'] : array();
 
 	return $config;
+}
+
+function schuetziwoche_get_fields() {
+	return array('mo_eat', 'mo_sleep', 'di_eat', 'di_sleep', 'mi_eat', 'mi_sleep', 'do_eat', 'do_sleep', 'fr_eat', 'fr_sleep');
+}
+
+function schuetziwoche_is_disabled($config, $field) {
+	return !empty($config['disabled'][$field]);
+}
+
+function schuetziwoche_field_input($config, $field, $checked = false) {
+	$day = array('mo' => 1, 'di' => 2, 'mi' => 3, 'do' => 4, 'fr' => 5)[substr($field, 0, 2)];
+	$limit = strpos($field, '_eat') ? $config['limit_eat'] : $config['limit_sleep'];
+	$disabled = schuetziwoche_is_disabled($config, $field) || time() > $config['date'][$day] + $limit;
+	return '<input type="checkbox" name="' . $field . '" value="1"' . ($checked && !$disabled ? ' checked="checked"' : '') . ($disabled ? ' disabled="disabled"' : '') . '>';
+}
+
+function schuetziwoche_get_field_labels($config) {
+	$labels = array();
+	foreach (schuetziwoche_get_fields() as $field) {
+		$day = array('mo' => 1, 'di' => 2, 'mi' => 3, 'do' => 4, 'fr' => 5)[substr($field, 0, 2)];
+		$labels[$field] = date('d.m.', $config['date'][$day]) . (strpos($field, '_eat') ? ' Nachtessen' : ' Übernachtung');
+	}
+	return $labels;
 }
 
 function schuetziwoche_css(){
@@ -174,16 +199,16 @@ function schuetziwoche_bearbeiten() {
 			</tr>
 			<tr>';
 		$out .= '<td><img src="'.$config['imgurl'].'vegi.png" title="Ich esse keine Tiere!"><br><input type="checkbox" '.($row->isvegi?'checked="checked"':'').' name="isvegi" value="1"></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->mo_eat?'checked="checked"':'').' name="mo_eat" value="1" '.(time()>($config['date'][1]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->mo_sleep?'checked="checked"':'').' name="mo_sleep" value="1" '.(time()>$config['date'][1]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->di_eat?'checked="checked"':'').' name="di_eat" value="1" '.(time()>($config['date'][2]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->di_sleep?'checked="checked"':'').' name="di_sleep" value="1" '.(time()>$config['date'][2]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->mi_eat?'checked="checked"':'').' name="mi_eat" value="1" '.(time()>($config['date'][3]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->mi_sleep?'checked="checked"':'').' name="mi_sleep" value="1" '.(time()>$config['date'][3]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->do_eat?'checked="checked"':'').' name="do_eat" value="1" '.(time()>($config['date'][4]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->do_sleep?'checked="checked"':'').' name="do_sleep" value="1" '.(time()>$config['date'][4]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" '.($row->fr_eat?'checked="checked"':'').' name="fr_eat" value="1" '.(time()>($config['date'][5]+$config['limit_eat'])?'disabled="disabled"':'').'></td>';
-		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" '.($row->fr_sleep?'checked="checked"':'').' name="fr_sleep" value="1" '.(time()>$config['date'][5]+$config['limit_sleep']?'disabled="disabled"':'').'></td>';
+		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat', $row->mo_eat).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep', $row->mo_sleep).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat', $row->di_eat).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep', $row->di_sleep).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat', $row->mi_eat).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep', $row->mi_sleep).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat', $row->do_eat).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep', $row->do_sleep).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat', $row->fr_eat).'</td>';
+		$out .= '<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep', $row->fr_sleep).'</td>';
 		$out .= '</tr>';
 		$out .= get_paystatus_row($row);
 		$out .= '</table>';
@@ -285,54 +310,28 @@ function get_paystatus_row($item){
 		$out .= '<td colspan="10"><b>&#128176; Abteilung übernimmt die Kosten &#128176;</b></td>';
 	}
 	else {
-		if ($item->mo_eat == 1) {
-			$out .= '<td colspan="2">' .($item->mo_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
-		}
-		elseif ($item->mo_sleep == 1) {
-			$out .= '<td colspan="2">' .($item->mo_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
-		}
-		else {
-			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
-		}
-		if ($item->di_eat == 1) {
-			$out .= '<td colspan="2">' .($item->di_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
-		}
-		elseif ($item->di_sleep == 1) {
-			$out .= '<td colspan="2">' .($item->di_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
-		}
-		else {
-			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
-		}
-		if ($item->mi_eat == 1) {
-			$out .= '<td colspan="2">' .($item->mi_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
-		}
-		elseif ($item->mi_sleep == 1) {
-			$out .= '<td colspan="2">' .($item->mi_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
-		}
-		else {
-			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
-		}
-		if ($item->do_eat == 1) {
-			$out .= '<td colspan="2">' .($item->do_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
-		}
-		elseif ($item->do_sleep == 1) {
-			$out .= '<td colspan="2">' .($item->do_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
-		}
-		else {
-			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
-		}
-		if ($item->fr_eat == 1) {
-			$out .= '<td colspan="2">' .($item->fr_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_eat'] .' Fr.)</td>');
-		}
-		elseif ($item->fr_sleep == 1) {
-			$out .= '<td colspan="2">' .($item->fr_payed?'&#9989;<br>(0 Fr.)</td>':'&#10060;<br>(' .$config['cost_sleep'] .' Fr.)</td>');
-		}
-		else {
-			$out .= '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
+		foreach (array('mo', 'di', 'mi', 'do', 'fr') as $day) {
+			$out .= schuetziwoche_paystatus_cell($item, $config, $day);
 		}
 	}
 	$out .= '</tr>';
 	return $out;
+}
+
+function schuetziwoche_paystatus_cell($item, $config, $day) {
+	$eat = $day . '_eat';
+	$sleep = $day . '_sleep';
+	$payed = $day . '_payed';
+	if (schuetziwoche_is_disabled($config, $eat) && schuetziwoche_is_disabled($config, $sleep)) {
+		return '<td colspan="2" class="bezahl_tag_disabled">deaktiviert</td>';
+	}
+	if ($item->$eat == 1 && !schuetziwoche_is_disabled($config, $eat)) {
+		return '<td colspan="2">' . ($item->$payed ? '&#9989;<br>(0 Fr.)</td>' : '&#10060;<br>(' . $config['cost_eat'] . ' Fr.)</td>');
+	}
+	if ($item->$sleep == 1 && !schuetziwoche_is_disabled($config, $sleep)) {
+		return '<td colspan="2">' . ($item->$payed ? '&#9989;<br>(0 Fr.)</td>' : '&#10060;<br>(' . $config['cost_sleep'] . ' Fr.)</td>');
+	}
+	return '<td colspan="2">&#127958;<br>(0 Fr.)</td>';
 }
 
 function schuetziwoche_anmeldung() {
@@ -377,16 +376,16 @@ function schuetziwoche_anmeldung() {
 				<th colspan="2">Fr '. date('d.n',$config['date'][5]) .'</th>
 			</tr>
 			<tr>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" name="mo_eat" value="1" '. (time()>($config['date'][1]+$config['limit_eat'])?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" name="mo_sleep" value="1" '. (time()>$config['date'][1]+$config['limit_sleep']?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" name="di_eat" value="1" '. (time()>($config['date'][2]+$config['limit_eat'])?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" name="di_sleep" value="1" '. (time()>$config['date'][2]+$config['limit_sleep']?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" name="mi_eat" value="1" '. (time()>($config['date'][3]+$config['limit_eat'])?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" name="mi_sleep" value="1" '. (time()>$config['date'][3]+$config['limit_sleep']?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" name="do_eat" value="1" '. (time()>($config['date'][4]+$config['limit_eat'])?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" name="do_sleep" value="1" '. (time()>$config['date'][4]+$config['limit_sleep']?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br><input type="checkbox" name="fr_eat" value="1" '. (time()>($config['date'][5]+$config['limit_eat'])?'disabled="disabled"':'') .'></label></td>
-				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br><input type="checkbox" name="fr_sleep" value="1" '. (time()>$config['date'][5]+$config['limit_sleep']?'disabled="disabled"':'') .'></label></td>
+				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mo_eat').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mo_sleep').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'di_eat').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'di_sleep').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'mi_eat').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'mi_sleep').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'do_eat').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'do_sleep').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"><br>'.schuetziwoche_field_input($config, 'fr_eat').'</label></td>
+				<td><label><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"><br>'.schuetziwoche_field_input($config, 'fr_sleep').'</label></td>
 			</tr>
 		</table>
 		<br>
@@ -505,16 +504,9 @@ function schuetziwoche_liste() {
 		$out .= '<tr>';
 		$out .= '<td title="'.$row->name.'">'.schuetziwoche_kuerzen($row->name,11).'</td>';
 		$out .= '<td title="'.$row->abteilung.'">'.($row->abteilung?schuetziwoche_kuerzen($row->abteilung,18):'&nbsp;').'</td>';
-		$out .= ($row->mo_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->mo_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->di_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->di_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->mi_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->mi_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->do_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->do_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->fr_eat?'<td><img src="'.$config['imgurl'].'eat.gif" title="Nachtessen"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
-		$out .= ($row->fr_sleep?'<td><img src="'.$config['imgurl'].'sleep.gif" title="&Uuml;bernachtung & Zmorge"></td>':'<td class="uebersicht_tag_na">&nbsp;</td>');
+		foreach (schuetziwoche_get_fields() as $field) {
+			$out .= schuetziwoche_overview_cell($row, $config, $field);
+		}
 		$out .= '</tr>';
 
 		$total++;
@@ -524,19 +516,21 @@ function schuetziwoche_liste() {
 
 	$out .= '<tr>';
 	$out .= '<td>'.$total.'</td><td>&nbsp;</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->mo_eat.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->mo_sleep.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->di_eat.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->di_sleep.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->mi_eat.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->mi_sleep.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->do_eat.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->do_sleep.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->fr_eat.'</td>';
-	$out .= '<td class="uebersicht_tot">'.$row->fr_sleep.'</td>';
+	foreach (schuetziwoche_get_fields() as $field) {
+		$out .= '<td class="uebersicht_tot' . (schuetziwoche_is_disabled($config, $field) ? ' uebersicht_tag_disabled' : '') . '">' . (schuetziwoche_is_disabled($config, $field) ? '&mdash;' : $row->$field) . '</td>';
+	}
 	$out .= '</tr></table>';
 
 	return $out;
+}
+
+function schuetziwoche_overview_cell($row, $config, $field) {
+	if (schuetziwoche_is_disabled($config, $field)) {
+		return '<td class="uebersicht_tag_disabled" title="Deaktiviert">&mdash;</td>';
+	}
+	$image = strpos($field, '_eat') ? 'eat.gif' : 'sleep.gif';
+	$title = strpos($field, '_eat') ? 'Nachtessen' : '&Uuml;bernachtung & Zmorge';
+	return $row->$field ? '<td><img src="' . $config['imgurl'] . $image . '" title="' . $title . '"></td>' : '<td class="uebersicht_tag_na">&nbsp;</td>';
 }
 
 function schuetziwoche_kuerzen($str, $len){
@@ -599,6 +593,7 @@ function schuetziwoche_install() {
 		'abteilungen_paying' => 'Schütziwoche-OK',
 		'cost_eat' => 9,
 		'cost_sleep' => 4,
+		'disabled' => array(),
 	));
 
 }

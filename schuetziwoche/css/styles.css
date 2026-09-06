@@ -68,6 +68,12 @@
 	width: 40px;
 }
 
+#schuetziwoche .uebersicht_tag_disabled,
+#schuetziwoche .bezahl_tag_disabled {
+	background: #ddd;
+	color: #888;
+}
+
 
 #schuetziwoche .kosten_tot td{
 	font-weight: bold;
