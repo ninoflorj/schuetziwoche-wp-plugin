@@ -54,7 +54,7 @@ function schuetziwoche_admin_options_page(){
     $people = get_transient('schuetziwoche_disabled_notice_' . get_current_user_id());
     if ($people) {
         delete_transient('schuetziwoche_disabled_notice_' . get_current_user_id());
-        $people_notice = 'Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:\n\n' . implode("\n", $people);
+        $people_notice = "Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:\n" . implode("\n", $people);
         echo '<div class="notice notice-info"><p><b>Diese Personen sollten von dir über die gesperrten Anmeldungen informiert werden, da sie an den jetzt gesperrten Tagen bereits angemeldet waren:</b><br>' . esc_html(implode(', ', $people)) . '</p></div>';
         echo '<script>window.alert(' . json_encode($people_notice) . ');</script>';
     }
