@@ -114,9 +114,11 @@ class TT_Example_List_Table extends WP_List_Table {
 
     function getBlock($val, $type, $field){
         $config = schuetziwoche_get_config();
-        $background = !empty($config['disabled'][$field]) ? '#DDD' : '#EEE';
-        $opacity = !empty($config['disabled'][$field]) ? ' opacity: 0.6;' : '';
-        $out = '<div style="display: inline-block; width: 20px; height: 20px; background: ' . $background . '; margin: 2px; vertical-align: top;' . $opacity . '">';
+        $disabled = !empty($config['disabled'][$field]);
+        $background = $disabled ? 'repeating-linear-gradient(135deg, #e5e7eb, #e5e7eb 3px, #525252 3px, #525252 5px)' : '#e5e7eb';
+        $border = '#9ca3af';
+        $title = $disabled ? ' title="Tag/Mahlzeit durch Admin deaktiviert"' : '';
+        $out = '<div style="display: inline-block; width: 20px; height: 20px; background: ' . $background . '; border: 1px solid ' . $border . '; margin: 2px; vertical-align: top; box-sizing: border-box;"' . $title . '>';
         if ($val == '1'){
             $out .= '<img src="'.$config['imgurl'].$type.'.gif"/>';
         } else {
